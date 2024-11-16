@@ -48,7 +48,6 @@
                                 {% endif %}
                             </p>
                             <p class="card-text">Created on: {{ survey.creation_date }}</p>
-                            <a href="{% url 'survey_detail' survey.id %}" class="btn btn-primary">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -57,6 +56,7 @@
                     <a href="{% url 'create_survey' %}" class="btn btn-primary m-1" id="add_button" style="width: auto;">+</a>
                 </div>
             {% empty %}
+                <p>You have no surveys at the moment. Start creating surveys to populate this page.</p>
                 <div class="d-flex align-items-center justify-content-end">
                     <label for="add_button">Create new survey</label>
                     <a href="{% url 'create_survey' %}" class="btn btn-primary m-1" id="add_button" style="width: auto;">+</a>

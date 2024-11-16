@@ -7,15 +7,12 @@ def home(request):
     return render(request, 'home.html')
 
 # Syukri
-def crud_survey(request):
-    return render(request, 'crud_survey.html')
-
 def list_my_survey(request):
     list_semua = Survey.objects.all()
     return render(request, 'crud_survey.html', {'surveys': surveys})
 
-# def create_survey(request):
-#     return render(request, 'create_survey.html')
+def my_survey(request):
+    return render(request, 'crud_survey.html')
 
 def create_survey(request):
     if request.method == 'POST':

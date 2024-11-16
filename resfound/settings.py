@@ -56,7 +56,7 @@ ROOT_URLCONF = 'resfound.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'main_app')],
+        'DIRS': [os.path.join(BASE_DIR, 'survey')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'resfound',
         'USER' : 'root',
-        'PASSWORD' : 'password',
+        'PASSWORD' : 'dawn',
         'HOST' : 'localhost',
         'port' : '3306'
     }
