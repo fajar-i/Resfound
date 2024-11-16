@@ -6,8 +6,5 @@ def home(request):
     return render(request, 'home.html')
 
 # Syukri
-def crud_survey(request):
-    return render(request, 'crud_survey.html')
-
 def list_my_survey(request):
     return render(request, 'crud_survey.html', {'surveys': Survey.objects.all()})
