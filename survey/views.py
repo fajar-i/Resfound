@@ -9,10 +9,10 @@ def home(request):
 # Syukri
 def list_my_survey(request):
     list_semua = Survey.objects.all()
-    return render(request, 'crud_survey.html', {'surveys': surveys})
+    return render(request, 'my_survey.html', {'surveys': surveys})
 
 def my_survey(request):
-    return render(request, 'crud_survey.html')
+    return render(request, 'my_survey.html')
 
 def create_survey(request):
     if request.method == 'POST':
@@ -21,7 +21,7 @@ def create_survey(request):
             survey = form.save(commit=False)
             survey.user = request.user  # Assuming the user is logged in
             survey.save()
-            return redirect('crud_survey')  # Replace with the name of your survey list page
+            return redirect('my_survey')  # Replace with the name of your survey list page
     else:
         form = FormToCreateSurvey()
     
