@@ -10,6 +10,4 @@ def crud_survey(request):
     return render(request, 'crud_survey.html')
 
 def list_my_survey(request):
-    list_semua = Survey.objects.all()
-    print(list_semua)  
-    return render(request, 'crud_survey.html', {'surveys': list_semua})
+    return render(request, 'crud_survey.html', {'surveys': Survey.objects.all()})
