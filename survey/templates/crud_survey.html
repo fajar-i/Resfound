@@ -14,22 +14,6 @@
     <div class="container mt-5">
         <h1 class="text-center mb-4">Surveys</h1>
         <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Survey.title</h5>
-                        <p class="card-text">survey.description|truncatewords:20</p>
-                        <p class="card-text"><strong>Total Price: survey.total_price</strong></p>
-                        <p class="card-text">
-                            Status: 
-                                <span class="badge bg-success">Active</span>
-                                <span class="badge bg-danger">Inactive</span>
-                        </p>
-                        <p class="card-text">Created on: survey.creation_date</p>
-                        <a href="#" class="btn btn-primary">View Details (url 'survey_detail' survey.id)</a>
-                    </div>
-                </div>
-            </div>
             {% for survey in surveys %}
                 <div class="col-md-4 mb-4">
                     <div class="card" style="width: 18rem;">
@@ -46,12 +30,11 @@
                                 {% endif %}
                             </p>
                             <p class="card-text">Created on: {{ survey.creation_date }}</p>
-                            <a href="{% url 'survey_detail' survey.id %}" class="btn btn-primary">View Details</a>
                         </div>
                     </div>
                 </div>
             {% empty %}
-                <p>Anda tidak memiliki survey apa pun saat ini. Mulai membuat survey untuk mengisi halaman ini</p>
+                <p>You have no surveys at the moment. Start creating surveys to populate this page.</p>
             {% endfor %}
         </div>
     </div>
