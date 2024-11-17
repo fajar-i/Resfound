@@ -9,7 +9,7 @@ def home(request):
 # Syukri
 def list_my_survey(request):
     list_semua = Survey.objects.all()
-    return render(request, 'my_survey.html', {'surveys': surveys})
+    return render(request, 'my_survey.html', {'surveys': list_semua})
 
 def my_survey(request):
     return render(request, 'my_survey.html')
