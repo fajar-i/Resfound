@@ -16,6 +16,9 @@
         <form method="POST" class="needs-validation" novalidate>
             {% csrf_token %}
             {{ form.as_p }}
+
+            <a href="{% url 'view_question' %}" class="btn btn-secondary">View Questions For This Survey</a>
+
             <button type="submit" class="btn btn-primary">Save Survey</button>
             <a href="{% url 'my_survey' %}" class="btn btn-danger">Cancel</a>
         </form>

@@ -20,7 +20,7 @@ class Question(models.Model):
     id = models.CharField(primary_key=True, max_length=255, unique=True)
     question_text = models.TextField(max_length=1000)
     question_type = models.CharField(max_length=255)
-    img = models.BinaryField(null=True, blank=True)
+    img = models.BinaryField(null=True, blank=True, editable=True)
 
     def __str__(self):
         return self.question_text

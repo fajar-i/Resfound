@@ -1,5 +1,5 @@
 from django import forms
-from .models import Survey
+from .models import Survey, Question
 
 class FormToCreateSurvey(forms.ModelForm):
     class Meta:

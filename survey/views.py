@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 # Syukri
-from .models import Survey
-from .forms import FormToCreateSurvey
+from .models import Survey, Question, QuestionOrder
+from .forms import FormToCreateSurvey, FormToCreateQuestion
 
 def home(request):
     return render(request, 'home.html')
