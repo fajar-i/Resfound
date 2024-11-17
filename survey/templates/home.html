@@ -9,7 +9,17 @@
 
 <body>
     <h1>Hello, World!</h1>
-    <p>mabar ml</p>
+    <p>Here are your available links:</p>
+    <div>
+        {% for urlpattern in urlpatterns %}
+        <button 
+
+            onclick="location.href='{{ urlpattern.pattern }}'"
+        >
+            {{ urlpattern.name|default:urlpattern.pattern }}
+        </button>
+        {% endfor %}
+    </div>
 </body>
 
 </html>
