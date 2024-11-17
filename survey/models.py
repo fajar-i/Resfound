@@ -47,7 +47,7 @@ class Question(models.Model):
 
 class ResponseChoice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='choices')
-    text = models.TextField(max_length=1000)
+    choices_text = models.TextField(max_length=1000)
 
     def __str__(self):
         return self.text

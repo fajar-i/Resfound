@@ -1,5 +1,6 @@
 from django import forms
-from .models import Survey, Question, QuestionType
+from django.forms import inlineformset_factory
+from .models import Survey, Question, QuestionType, ResponseChoice
 
 class FormToCreateSurvey(forms.ModelForm):
     class Meta:
@@ -14,21 +15,21 @@ class FormToCreateSurvey(forms.ModelForm):
             'total_price': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
-class FormToAddQuestion(forms.ModelForm):
+class FormToCreateQuestion(forms.ModelForm):
     class Meta:
         model = Question
         fields = ['question_text', 'question_type', 'question_order', 'img']
         widgets = {
-            'question_text': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter question text'}),
-            # 'question_type': forms.Select(attrs={'class': 'form-control'}),
+            'question_text': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'question_type': forms.Select(attrs={'class': 'form-control'}),
             'question_order': forms.NumberInput(attrs={'class': 'form-control'}),
-            'img': forms.FileInput(attrs={'class': 'form-control'}),
+            'img': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
-    # def __init__(self, *args, **kwargs):
-    #     super(FormToAddQuestion, self).__init__(*args, **kwargs)
-    #     # Add dynamic choices from the database
-    #     queryset_choices = [(qt.id, qt.name) for qt in QuestionType.objects.all()]
-        
-    #     # Set the choices for the field
-    #     self.fields['question_type'].choices = queryset_choices
+class FormToCreateChoices(forms.ModelForm):
+    class Meta:
+        model = ResponseChoice
+        fields = ['choices_text']
+        widgets = {
+            'choices_text': forms.Textarea(attrs={'class': 'form-control'})
+        }
