@@ -4,21 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resfound | Home</title>
+    <title>My Survey</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
 <body>
-    <h1>Hello, World!</h1>
-    <p>Here are your available links:</p>
-    <div>
-        {% for urlpattern in urlpatterns %}
-        <button 
-
-            onclick="location.href='{{ urlpattern.pattern }}'"
-        >
-            {{ urlpattern.name|default:urlpattern.pattern }}
-        </button>
-        {% endfor %}
+    <div class="d-flex flex-column align-items-center text-align-center">
+        <h1>Hello, World!</h1>
+        <a href="{% url 'create_survey' %}" class="btn btn-primary m-1" id="add_button" style="width: auto;">Create new
+            survey</a>
+        <a href="http://127.0.0.1:8000/admin" class="btn btn-primary m-1" id="add_button" style="width: auto;">Admin
+            page</a>
     </div>
 </body>
 

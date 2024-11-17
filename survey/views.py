@@ -4,11 +4,8 @@ from django.contrib import messages
 from .models import Survey, Question, QuestionType
 from .forms import FormToCreateSurvey, FormToAddQuestion
 
-
 def home(request):
-    from .urls import urlpatterns  # Lazy import
-    return render(request, 'home.html', {'urlpatterns': urlpatterns})
-
+    return render(request, 'home.html')
 
 # Syukri
 def list_my_survey(request):
