@@ -32,7 +32,7 @@ class Question(models.Model):
     question_text = models.TextField(max_length=1000)
     question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE, related_name='questions')
     question_order = models.IntegerField()
-    img = models.ImageField(upload_to='questions/images/', null=True, blank=True)
+    img = models.ImageField(upload_to='questions/images/', null=True, blank=True, editable=True)
 
     class Meta:
         unique_together = ('survey', 'question_order')
