@@ -51,12 +51,32 @@ def create_or_edit_survey(request, survey_id=None):
                 return redirect('edit_survey', survey_id=survey.id)
             # else:
             #     form tidak valid, error
+        else:
+            survey = Survey.objects.get(pk=survey_id)
+            is_edit_survey = bool(survey)
+            question_form = FormToCreateQuestion()
+            if survey:
+                survey_form = FormToCreateSurvey(instance=survey)
+                questions = Question.objects.filter(survey=survey).order_by('question_order')
+            else:
+                survey_form = FormToCreateSurvey()
+                questions = None
+            return render(request, 'create_survey.html', {
+                # list semua "variabel" yang dibutuhkan oleh file html
+                'is_edit_survey': is_edit_survey,
+                'survey_form': survey_form,
+                'question_form': question_form,
+                'questions': questions
+            })
     
-    survey = Survey.objects.get(pk=survey_id)
     is_edit_survey = bool(survey)
-    survey_form = FormToCreateSurvey(instance=survey)
     question_form = FormToCreateQuestion()
-    questions = Question.objects.filter(survey=survey).order_by('question_order')
+    if survey:
+        survey_form = FormToCreateSurvey(instance=survey)
+        questions = Question.objects.filter(survey=survey).order_by('question_order')
+    else:
+        survey_form = FormToCreateSurvey()
+        questions = None
     return render(request, 'create_survey.html', {
         # list semua "variabel" yang dibutuhkan oleh file html
         'is_edit_survey': is_edit_survey,
