@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('dynamic-formset/<int:survey_id>/', views.dynamic_formset_view, name='dynamic_formset'),
     # Syukri
     path('list_my_survey/', views.list_my_survey, name='list_my_survey'),
     path('create_survey/', views.create_or_edit_survey, name='create_survey'),

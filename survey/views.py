@@ -93,3 +93,25 @@ def delete_question(request, question_id):
         return redirect('edit_survey', survey_id=survey.id)
     else:
         return redirect('edit_survey', survey_id=question.survey.id)
+
+
+from .nyobaform import YourFormSet
+
+def dynamic_formset_view(request, survey_id):
+    survey = Survey.objects.get(pk=survey_id)  # Get the specific survey instance
+
+    if request.method == 'POST':
+        formset = YourFormSet(request.POST, request.FILES, queryset=survey.questions.all())
+        if formset.is_valid():
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.survey = survey  # Assign the survey to the question
+                instance.save()
+            formset.save_m2m()  # Save many-to-many relationships, if any
+            return redirect('dynamic_formset', survey_id=survey.id)
+        else:
+            print("Formset Errors:", formset.errors)
+    else:
+        formset = YourFormSet(queryset=survey.questions.all())
+
+    return render(request, 'dynamic_formset.html', {'formset': formset, 'survey': survey})
