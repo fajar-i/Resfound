@@ -33,15 +33,15 @@
                         </p>
                         <p class="card-text">Created on: {{ survey.creation_date }}</p>
 
-                        <a href="{% url 'Insert_Question' survey.id %}" class="btn btn-primary m-1" id="edit_button"
-                            style="width: auto;">
+                        <a href="{% url 'Insert_Question' survey.id %}" class="btn btn-primary m-1">
                             Edit Survey
                         </a>
 
-                        <button class="btn btn-danger" id="show_delete_button">Delete Survey</button>
-                        <div id="real_delete_button" style="display: none;">
+                        <button class="btn btn-danger show-delete-button">Delete Survey</button>
+                        <div class="real-delete-button" style="display: none;">
                             <form method="POST" action="{% url 'delete_survey' survey.id %}" style="display:inline;">
-                                <button type="submit" class="btn btn-danger" style="display: inline-block;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">
                                     Yes, delete
                                 </button>
                             </form>
@@ -55,20 +55,21 @@
             <div class="d-flex align-items-center justify-content-end">
                 <div class="d rounded ps-1 bg-light justify-content-end" style="width: auto;">
                     <label for="add_button">Create New Survey</label>
-                    <a href="{% url 'create_survey' %}" class="btn btn-primary m-1" id="add_button"
-                        style="width: auto;">+</a>
+                    <a href="{% url 'create_survey' %}" class="btn btn-primary m-1" id="add_button" style="width: auto;">+</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-        crossorigin="anonymous">
-
-        document.getElementById('show_delete_button').onclick = function () {
-            const hidden_button = document.getElementById('real_delete_button');
-            hidden_button.style.display = 'inline-block';
-        };
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+        // Attach event listeners to all delete buttons
+        document.querySelectorAll('.show-delete-button').forEach((button, index) => {
+            button.addEventListener('click', function () {
+                const hiddenButton = document.querySelectorAll('.real-delete-button')[index];
+                hiddenButton.style.display = 'block';
+            });
+        });
     </script>
 </body>
 
