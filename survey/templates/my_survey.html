@@ -10,61 +10,68 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
-<body>
+<body class="bg-light">
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Surveys</h1>
+        <div class="container rounded bg-light mb-4 p-1">
+            <h1 class="text-center">My Surveys</h1>
+        </div>
         <div class="row">
-            <!-- <div class="col-md-12 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Survey Title</h5>
-                        <p class="card-text">Survey Description</p>
-                        <p class="card-text"><strong>Survey Points: ...</strong></p>
-                        <p class="card-text">
-                            Status: 
-                                <span class="badge bg-success">Active</span>
-                                <span class="badge bg-danger">Inactive</span>
-                        </p>
-                        <p class="card-text">Date Created: </p>
-                        <a href="#" class="btn btn-primary">View Survey</a>
-                        <a href="#" class="btn btn-warning">Edit Survey</a>
-                        <a href="#" class="btn btn-info">View Survey Responses</a>
-                    </div>
-                </div>
-            </div> -->
             {% for survey in surveys %}
-                <div class="col-md-12 mb-4">
-                    <div class="card" style="width: auto;">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ survey.title }}</h5>
-                            <p class="card-text">{{ survey.description|truncatewords:20 }}</p>
-                            <p class="card-text"><strong>Total Price: ${{ survey.total_price }}</strong></p>
-                            <p class="card-text">
-                                Status: 
-                                {% if survey.status %}
-                                    <span class="badge bg-success">Active</span>
-                                {% else %}
-                                    <span class="badge bg-danger">Inactive</span>
-                                {% endif %}
-                            </p>
-                            <p class="card-text">Created on: {{ survey.creation_date }}</p>
+            <div class="col-md-12 mb-4">
+                <div class="card" style="width: auto;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ survey.title }}</h5>
+                        <p class="card-text">{{ survey.description|truncatewords:20 }}</p>
+                        <p class="card-text"><strong>Total Price: ${{ survey.total_price }}</strong></p>
+                        <p class="card-text">
+                            Status:
+                            {% if survey.status %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </p>
+                        <p class="card-text">Created on: {{ survey.creation_date }}</p>
 
-                            <a href="{% url 'Insert_Question' survey.id %}" class="btn btn-primary m-1" id="edit_button" style="width: auto;">Edit Survey</a>
-                        </div>
+                        <a href="{% url 'Insert_Question' survey.id %}" class="btn btn-primary m-1" id="edit_button"
+                            style="width: auto;">
+                            Edit Survey
+                        </a>
+
+                        <button class="btn btn-danger" id="show_delete_button">Delete Survey</button>
+                        <form method="POST" action="{% url 'delete_survey' survey.id %}" style="display:none;" id="real_delete_button">
+                            <button type="submit" class="btn btn-danger" style="display: inline-block;">
+                                Yes, delete
+                            </button>
+                        </form>
                     </div>
                 </div>
+            </div>
             {% empty %}
-                <p>You have no surveys at the moment. Start creating surveys to populate this page.</p>
+            <p>You have no surveys at the moment. Start creating surveys to populate this page.</p>
             {% endfor %}
             <div class="d-flex align-items-center justify-content-end">
-                <label for="add_button">Create new survey</label>
-                <a href="{% url 'create_survey' %}" class="btn btn-primary m-1" id="add_button" style="width: auto;">+</a>
+                <div class="d rounded ps-1 bg-light justify-content-end" style="width: auto;">
+                    <label for="add_button">Create New Survey</label>
+                    <a href="{% url 'create_survey' %}" class="btn btn-primary m-1" id="add_button"
+                        style="width: auto;">+</a>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-OCpP0XIs1s87h67LgQDs60mnfW/ZZ+FcK7ON5gEKXk5cI74dj5vJozuBy39xlQ+F" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        crossorigin="anonymous">
+
+        document.getElementById('show_delete_button').onclick = function () {
+            const hidden_button = document.getElementById('real_delete_button');
+            if (hidden_button.style.display === 'none') {
+                hidden_button.style.display = 'inline';
+            } else {
+                hidden_button.style.display = 'none';
+            }
+        };
+    </script>
 </body>
 
 </html>
