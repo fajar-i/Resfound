@@ -1,7 +1,8 @@
 from django import forms
-from django.forms import inlineformset_factory
+from django.forms import modelformset_factory, inlineformset_factory
 from .models import Survey, Question, QuestionType, ResponseChoice
 
+# Form to create a survey
 class FormToCreateSurvey(forms.ModelForm):
     class Meta:
         model = Survey
@@ -15,6 +16,7 @@ class FormToCreateSurvey(forms.ModelForm):
             'total_price': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
+# Form to create questions
 class FormToCreateQuestion(forms.ModelForm):
     class Meta:
         model = Question
@@ -25,7 +27,15 @@ class FormToCreateQuestion(forms.ModelForm):
             'question_order': forms.NumberInput(attrs={'class': 'form-control'}),
             'img': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
+# Create a modelformset for Questions
+questionsForm = modelformset_factory(
+    Question,
+    form=FormToCreateQuestion,  # Use the FormToCreateQuestion for customization
+    extra=1,
+    can_delete=True  # Allow deletion of forms
+)
 
+# Form to create response choices
 class FormToCreateChoices(forms.ModelForm):
     class Meta:
         model = ResponseChoice
@@ -33,3 +43,4 @@ class FormToCreateChoices(forms.ModelForm):
         widgets = {
             'choices_text': forms.Textarea(attrs={'class': 'form-control'})
         }
+

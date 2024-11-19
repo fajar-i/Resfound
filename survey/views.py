@@ -5,7 +5,7 @@ from django.urls import reverse
 
 # Syukri
 from .models import Survey, Question, QuestionType, ResponseChoice
-from .forms import FormToCreateSurvey, FormToCreateQuestion, FormToCreateChoices
+from .forms import FormToCreateSurvey, FormToCreateQuestion, FormToCreateChoices, questionsForm
 
 def home(request):
     return render(request, 'home.html')
@@ -85,33 +85,33 @@ def create_or_edit_survey(request, survey_id=None):
         'questions': questions
     })
 
+
 def delete_question(request, question_id):
     question = get_object_or_404(Question, id=question_id)
-    if request.method == 'POST':
+    if request.method == 'POST' or 'GET':
         survey = question.survey  # Get the related survey
         question.delete()  # Delete the question
-        return redirect('edit_survey', survey_id=survey.id)
+        return redirect('Insert_Question', survey_id=survey.id)
     else:
-        return redirect('edit_survey', survey_id=question.survey.id)
+        return redirect('Insert_Question', survey_id=question.survey.id)
 
 
-from .nyobaform import YourFormSet
-
-def dynamic_formset_view(request, survey_id):
+def Insert_Question(request, survey_id):
     survey = Survey.objects.get(pk=survey_id)  # Get the specific survey instance
 
     if request.method == 'POST':
-        formset = YourFormSet(request.POST, request.FILES, queryset=survey.questions.all())
+        # questionsForm adalah variabel yang ada di forms.py
+        formset = questionsForm(request.POST, request.FILES, queryset=survey.questions.all())
         if formset.is_valid():
             instances = formset.save(commit=False)
             for instance in instances:
                 instance.survey = survey  # Assign the survey to the question
                 instance.save()
             formset.save_m2m()  # Save many-to-many relationships, if any
-            return redirect('dynamic_formset', survey_id=survey.id)
+            return redirect('Insert_Question', survey_id=survey.id)
         else:
             print("Formset Errors:", formset.errors)
     else:
-        formset = YourFormSet(queryset=survey.questions.all())
+        formset = questionsForm(queryset=survey.questions.all())
 
-    return render(request, 'dynamic_formset.html', {'formset': formset, 'survey': survey})
+    return render(request, 'Insert_Question.html', {'formset': formset, 'survey': survey})
