@@ -39,11 +39,13 @@
                         </a>
 
                         <button class="btn btn-danger" id="show_delete_button">Delete Survey</button>
-                        <form method="POST" action="{% url 'delete_survey' survey.id %}" style="display:none;" id="real_delete_button">
-                            <button type="submit" class="btn btn-danger" style="display: inline-block;">
-                                Yes, delete
-                            </button>
-                        </form>
+                        <div id="real_delete_button" style="display: none;">
+                            <form method="POST" action="{% url 'delete_survey' survey.id %}" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" style="display: inline-block;">
+                                    Yes, delete
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -65,11 +67,7 @@
 
         document.getElementById('show_delete_button').onclick = function () {
             const hidden_button = document.getElementById('real_delete_button');
-            if (hidden_button.style.display === 'none') {
-                hidden_button.style.display = 'inline';
-            } else {
-                hidden_button.style.display = 'none';
-            }
+            hidden_button.style.display = 'inline-block';
         };
     </script>
 </body>
