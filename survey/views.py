@@ -84,6 +84,15 @@ def create_or_edit_survey(request, survey_id=None):
         'questions': questions
     })
 
+def delete_survey(request, survey_id):
+    survey = get_object_or_404(Survey, id=survey_id)
+    if request.method == 'POST':
+        survey_name = survey.title
+        survey.delete()
+        messages.warning(request, f"Survey '{survey_name}' has been successfully deleted")
+    else:
+        messages.error(request, "Invalid request. Surveys can only be deleted through POST requests")
+    return redirect('list_my_survey')
 
 def delete_question(request, question_id):
     question = get_object_or_404(Question, id=question_id)
