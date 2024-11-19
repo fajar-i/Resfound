@@ -114,7 +114,7 @@ def Insert_Question(request, survey_id):
         survey = survey_form.save(commit=False)
         survey.user = request.user
         survey.save()
-        return redirect('list_my_survey')
+        return redirect('Insert_Question', survey_id=survey.id)
 
     # Handle Question Formset Submission
     formset = questionsForm(request.POST or None, request.FILES or None, queryset=survey.questions.all())
@@ -124,7 +124,7 @@ def Insert_Question(request, survey_id):
             instance.survey = survey
             instance.save()
         formset.save_m2m()
-        return redirect('insert_question', survey_id=survey.id)
+        return redirect('Insert_Question', survey_id=survey.id)
 
     # Render the template
     return render(request, 'insert_question.html', {

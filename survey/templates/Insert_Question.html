@@ -21,33 +21,29 @@
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ survey_form.as_p }}
+
         {% if survey_form.errors %}
         <div class="alert alert-danger">
             {{ survey_form.errors }}
         </div>
         {% endif %}
-        <button type="submit" name="survey_form" class="btn btn-success">
-            {% if is_edit_survey %}
-            Update Survey
-            {% else %}
-            Create Survey
-            {% endif %}
-        </button>
+
+        <button type="submit" name="survey_form" class="btn btn-success">save</button>
         <a href="{% url 'list_my_survey' %}" class="btn btn-secondary">Return</a>
     </form>
 
     <div class="container mt-5">
         <form method="POST" id="dynamic-formset" enctype="multipart/form-data">
             {% csrf_token %}
+
+            <!-- Available questions -->
             {{ formset.management_form }}
             <div id="form-container" class="row g-3">
                 {% for form in formset %}
                 <div class="col-12 form border p-3 mb-3 bg-light rounded">
                     {{ form.as_p }}
                     {% if form.instance.pk %}
-                    <a href="{% url 'delete_question' form.instance.pk %}" class="btn btn-danger btn-sm">
-                        Remove
-                    </a>
+                    <a href="{% url 'delete_question' form.instance.pk %}" class="btn btn-danger btn-sm">Remove</a>
                     {% endif %}
                 </div>
                 {% endfor %}
