@@ -3,7 +3,6 @@ from django.contrib import messages
 from django.db.models import Prefetch, Max
 from django.urls import reverse
 
-# Syukri
 from .models import Survey, Question, QuestionType, ResponseChoice
 from .forms import FormToCreateSurvey, FormToCreateQuestion, FormToCreateChoices, questionsForm
 
@@ -97,21 +96,32 @@ def delete_question(request, question_id):
 
 
 def Insert_Question(request, survey_id):
-    survey = Survey.objects.get(pk=survey_id)  # Get the specific survey instance
+    survey = get_object_or_404(Survey, pk=survey_id)
+    is_edit_survey = bool(survey)
 
-    if request.method == 'POST':
-        # questionsForm adalah variabel yang ada di forms.py
-        formset = questionsForm(request.POST, request.FILES, queryset=survey.questions.all())
-        if formset.is_valid():
-            instances = formset.save(commit=False)
-            for instance in instances:
-                instance.survey = survey  # Assign the survey to the question
-                instance.save()
-            formset.save_m2m()  # Save many-to-many relationships, if any
-            return redirect('Insert_Question', survey_id=survey.id)
-        else:
-            print("Formset Errors:", formset.errors)
-    else:
-        formset = questionsForm(queryset=survey.questions.all())
+    # Handle Survey Form Submission
+    survey_form = FormToCreateSurvey(request.POST or None, instance=survey)
+    if 'survey_form' in request.POST and survey_form.is_valid():
+        survey = survey_form.save(commit=False)
+        survey.user = request.user
+        survey.save()
+        return redirect('list_my_survey')
 
-    return render(request, 'Insert_Question.html', {'formset': formset, 'survey': survey})
+    # Handle Question Formset Submission
+    formset = questionsForm(request.POST or None, request.FILES or None, queryset=survey.questions.all())
+    if request.method == 'POST' and formset.is_valid():
+        instances = formset.save(commit=False)
+        for instance in instances:
+            instance.survey = survey
+            instance.save()
+        formset.save_m2m()
+        return redirect('insert_question', survey_id=survey.id)
+
+    # Render the template
+    return render(request, 'insert_question.html', {
+        'survey_form': survey_form,
+        'formset': formset,
+        'survey': survey,
+        'is_edit_survey': is_edit_survey,
+    })
+

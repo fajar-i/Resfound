@@ -32,7 +32,6 @@ questionsForm = modelformset_factory(
     Question,
     form=FormToCreateQuestion,  # Use the FormToCreateQuestion for customization
     extra=1,
-    can_delete=True  # Allow deletion of forms
 )
 
 # Form to create response choices
