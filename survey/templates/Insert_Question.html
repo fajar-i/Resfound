@@ -20,46 +20,39 @@
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
+    
+        <!-- Survey Form -->
         {{ survey_form.as_p }}
-
         {% if survey_form.errors %}
-        <div class="alert alert-danger">
-            {{ survey_form.errors }}
-        </div>
+        <div class="alert alert-danger">{{ survey_form.errors }}</div>
         {% endif %}
-
-        <button type="submit" name="survey_form" class="btn btn-success">save</button>
-        <a href="{% url 'list_my_survey' %}" class="btn btn-secondary">Return</a>
+    
+        <!-- Question Formset -->
+        {{ question_form.management_form }}
+        <div id="form-container" class="row g-3">
+            {% for form in question_form %}
+            <div class="col-12 form border p-3 mb-3 bg-light rounded">
+                {{ form.as_p }}
+                {% if form.instance.pk %}
+                <a href="{% url 'delete_question' form.instance.pk %}" class="btn btn-danger btn-sm">Remove</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    
+        <!-- Template for new questions -->
+        <div id="form-template" class="col-12 form border p-3 mb-3 bg-light rounded" style="display: none;">
+            {{ question_form.empty_form.as_p }}
+            <button type="button" class="btn btn-danger btn-sm delete-form">Remove</button>
+        </div>
+    
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between mt-3">
+            <button type="button" id="add-form" class="btn btn-success">Add Question</button>
+            <button type="submit" class="btn btn-primary">Save All</button>
+        </div>
     </form>
-
-    <div class="container mt-5">
-        <form method="POST" id="dynamic-formset" enctype="multipart/form-data">
-            {% csrf_token %}
-
-            <!-- Available questions -->
-            {{ formset.management_form }}
-            <div id="form-container" class="row g-3">
-                {% for form in formset %}
-                <div class="col-12 form border p-3 mb-3 bg-light rounded">
-                    {{ form.as_p }}
-                    {% if form.instance.pk %}
-                    <a href="{% url 'delete_question' form.instance.pk %}" class="btn btn-danger btn-sm">Remove</a>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
-
-            <!-- Template for new forms -->
-            <div id="form-template" class="col-12 form border p-3 mb-3 bg-light rounded" style="display: none;">
-                {{ formset.empty_form.as_p }}
-                <button type="button" class="btn btn-danger btn-sm delete-form">Remove</button>
-            </div>
-
-            <div class="d-flex justify-content-between">
-                <button type="button" id="add-form" class="btn btn-success">Add Question</button>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </div>
-        </form>
+    
     </div>
 
     <script>

@@ -103,34 +103,41 @@ def delete_question(request, question_id):
     else:
         return redirect('Insert_Question', survey_id=question.survey.id)
 
+def Insert_Question(request, survey_id=None):
+    # Get survey instance if editing; otherwise, None for creating
+    survey = get_object_or_404(Survey, pk=survey_id) if survey_id else None
+    is_edit_survey = survey is not None
 
-def Insert_Question(request, survey_id):
-    survey = get_object_or_404(Survey, pk=survey_id)
-    is_edit_survey = bool(survey)
-
-    # Handle Survey Form Submission
+    # Initialize forms
     survey_form = FormToCreateSurvey(request.POST or None, instance=survey)
-    if 'survey_form' in request.POST and survey_form.is_valid():
-        survey = survey_form.save(commit=False)
-        survey.user = request.user
-        survey.save()
-        return redirect('Insert_Question', survey_id=survey.id)
+    question_formset = questionsForm(
+        request.POST or None,
+        request.FILES or None,
+        queryset=survey.questions.all() if survey else Survey.objects.none()
+    )
 
-    # Handle Question Formset Submission
-    formset = questionsForm(request.POST or None, request.FILES or None, queryset=survey.questions.all())
-    if request.method == 'POST' and formset.is_valid():
-        instances = formset.save(commit=False)
-        for instance in instances:
-            instance.survey = survey
-            instance.save()
-        formset.save_m2m()
-        return redirect('Insert_Question', survey_id=survey.id)
+    if request.method == 'POST':
+        # Handle both forms' submission
+        if survey_form.is_valid() and question_formset.is_valid():
+            # Save survey
+            survey = survey_form.save(commit=False)
+            survey.user = request.user  # Ensure the user is assigned
+            survey.save()
 
-    # Render the template
+            # Save associated questions
+            question_instances = question_formset.save(commit=False)
+            for question in question_instances:
+                question.survey = survey  # Link questions to the survey
+                question.save()
+            question_formset.save_m2m()
+
+            # Redirect to the same page or another appropriate view
+            return redirect('Insert_Question', survey_id=survey.id)
+
+    # Render template
     return render(request, 'insert_question.html', {
         'survey_form': survey_form,
-        'formset': formset,
+        'question_form': question_formset,
         'survey': survey,
         'is_edit_survey': is_edit_survey,
     })
-
