@@ -1,5 +1,4 @@
 {% load custom_filters %}
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,58 +19,64 @@
         {% endif %}
     </h1>
 
-    <body style="max-width: 800px; margin: auto;">
-        <h1 class="text-center mb-4">
-            {% if is_edit_survey %}
-            Edit Survey
-            {% else %}
-            Create New Survey
-            {% endif %}
-        </h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
+        <!-- Survey Form -->
+        {{ survey_form.as_p }}
+        {% if survey_form.errors %}
+        <div class="alert alert-danger">
+            {{ survey_form.errors }}
+        </div>
+        {% endif %}
 
-            <!-- Survey Form -->
-            {{ survey_form.as_p }}
-            {% if survey_form.errors %}
-            <div class="alert alert-danger">
-                {{ survey_form.errors }}
-            </div>
-            {% endif %}
+        <!-- Question Formset -->
+        {{ question_formset.management_form }}
+        <div class="form-container row g-3">
+            {% for form in question_formset %}
+            <div class="col-12 form border p-3 mb-3 bg-light rounded">
+                {{ form.as_p }}
 
-            <!-- Question Formset -->
-            {{ question_formset.management_form }}
-            <div id="form-container" class="row g-3">
-                {% for form in question_formset %}
-                <div class="col-12 form border p-3 mb-3 bg-light rounded">
-                    {{ form.as_p }}
-
-                    <!-- Choices for each question -->
-                    <div class="choices-container">
-                        <h6>Choices:</h6>
-                        {% with choice_formsets|get_item:form.instance.pk as choice_formset %}
-                        {% if choice_formset %}
-                        {{ choice_formset.management_form }}
-                        {% for choice_form in choice_formset %}
-                        <div class="mb-2">
-                            {{ choice_form.as_p }}
-                        </div>
-                        {% endfor %}
-                        {% endif %}
-                        {% endwith %}
-                        <button type="button" class="btn btn-success btn-sm add-choice">Add Choice</button>
+                <!-- Choices for each question -->
+                <div class="choices-container">
+                    <h6>Choices:</h6>
+                    {% with choice_formsets|get_item:form.instance.pk as choice_formset %}
+                    {% if choice_formset %}
+                    {{ choice_formset.management_form }}
+                    {% for choice_form in choice_formset %}
+                    <div class="mb-2">
+                        {{ choice_form.as_p }}
                     </div>
-
-                    {% if form.instance.pk %}
-                    <a href="{% url 'delete_question' form.instance.pk %}" class="btn btn-danger btn-sm mt-2">Remove</a>
+                    {% endfor %}
+                    {% else %}
+                    <p>No choices available.</p>
                     {% endif %}
+                    {% endwith %}
+                    <button type="button" class="btn btn-success btn-sm add-choice">Add Choice</button>
                 </div>
-                {% endfor %}
-            </div>
 
-            <!-- Template for new questions -->
-            <template id="form-template">
+
+                {% if form.instance.pk %}
+                <a href="{% url 'delete_question' form.instance.pk %}" class="btn btn-danger btn-sm mt-2">Remove</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between mt-3">
+            <button type="button" class="btn btn-success add-form">Add Question</button>
+            <button type="submit" class="btn btn-primary">Save All</button>
+        </div>
+    </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const formContainer = document.querySelector('.form-container');
+            const totalFormsInput = document.querySelector('[name="form-TOTAL_FORMS"]');
+
+            // Define templates as JavaScript variables
+            const formTemplate = `
                 <div class="col-12 form border p-3 mb-3 bg-light rounded">
                     {{ question_formset.empty_form.as_p|safe }}
                     <div class="choices-container">
@@ -80,62 +85,55 @@
                     </div>
                     <button type="button" class="btn btn-danger btn-sm mt-2 delete-form">Remove</button>
                 </div>
-            </template>
+            `;
 
-            <!-- Template for dynamic addition of choices -->
-            <template id="choice-template">
-                <div class="mb-2">
-                    <input type="text" class="form-control" name="choices_text" placeholder="Enter choice">
+            const choiceTemplate = `
+                <div class="mb-2 choice-item">
+                    <input type="hidden" name="choices-__prefix__-id" value="">
+                    <input type="text" class="form-control" name="choices-__prefix__-choice_text" placeholder="Enter choice">
                 </div>
-            </template>
+            `;
 
-            <!-- Buttons -->
-            <div class="d-flex justify-content-between mt-3">
-                <button type="button" id="add-form" class="btn btn-success">Add Question</button>
-                <button type="submit" class="btn btn-primary">Save All</button>
-            </div>
-        </form>
 
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const formContainer = document.getElementById('form-container');
-                const totalFormsInput = document.querySelector('#id_form-TOTAL_FORMS');
+            // Add Question Form
+            document.querySelector('.add-form').addEventListener('click', function () {
+                const formIndex = parseInt(totalFormsInput.value);
+                const newFormHtml = formTemplate.replace(/__prefix__/g, formIndex);
 
-                document.getElementById('add-form').addEventListener('click', function () {
-                    const formIndex = parseInt(totalFormsInput.value);
-                    const formTemplate = document.getElementById('form-template').content.cloneNode(true);
+                const formWrapper = document.createElement('div');
+                formWrapper.innerHTML = newFormHtml;
+                formContainer.appendChild(formWrapper.firstElementChild);
 
-                    // Replace prefix and append
-                    formTemplate.innerHTML = formTemplate.innerHTML.replace(/__prefix__/g, formIndex);
-                    totalFormsInput.value = formIndex + 1; // Increment form count
-                    formContainer.appendChild(formTemplate);
-
-                    attachChoiceListeners(); // Attach listeners for new form
-                });
-
-                function attachChoiceListeners() {
-                    document.querySelectorAll('.add-choice').forEach(button => {
-                        button.addEventListener('click', function () {
-                            const choicesContainer = button.closest('.choices-container');
-                            const choiceTemplate = document.getElementById('choice-template').content.cloneNode(true);
-                            choicesContainer.insertBefore(choiceTemplate, button);
-                        });
-                    });
-
-                    document.querySelectorAll('.delete-form').forEach(button => {
-                        button.addEventListener('click', function () {
-                            const form = button.closest('.form');
-                            form.remove();
-                            totalFormsInput.value = parseInt(totalFormsInput.value) - 1; // Decrement form count
-                        });
-                    });
-                }
-
-                // Attach listeners to existing forms
+                totalFormsInput.value = formIndex + 1; // Increment form count
                 attachChoiceListeners();
             });
 
-        </script>
-    </body>
+            // Attach Choice Listeners
+            function attachChoiceListeners() {
+                document.querySelectorAll('.add-choice').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const choicesContainer = button.closest('.choices-container');
+                        const newChoiceHtml = choiceTemplate.replace(/__prefix__/g, totalFormsInput.value);
+
+                        const choiceWrapper = document.createElement('div');
+                        choiceWrapper.innerHTML = newChoiceHtml;
+                        choicesContainer.insertBefore(choiceWrapper.firstElementChild, button);
+                    });
+                });
+
+                document.querySelectorAll('.delete-form').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const form = button.closest('.form');
+                        form.remove();
+                        totalFormsInput.value = parseInt(totalFormsInput.value) - 1; // Decrement form count
+                    });
+                });
+            }
+
+            // Initialize Listeners for Existing Forms
+            attachChoiceListeners();
+        });
+    </script>
+</body>
 
 </html>

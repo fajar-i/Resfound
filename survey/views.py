@@ -120,15 +120,6 @@ def Insert_Question(request, survey_id=None):
         queryset=survey.questions.all() if survey else Question.objects.none(),
     )
 
-    # # Initialize choice formsets for each question
-    # choice_formsets = {}
-    # for question_form in question_formset:
-    #     question = question_form.instance
-    #     if question.pk:  # Existing question
-    #         choice_formsets[question.pk] = ChoiceInlineFormset(instance=question)
-    #     else:  # New question
-    #         choice_formsets[question_form.prefix] = ChoiceInlineFormset(queryset=ResponseChoice.objects.none())
-
     if request.method == 'POST':
         # Handle form submission
         if survey_form.is_valid() and question_formset.is_valid():
@@ -144,8 +135,10 @@ def Insert_Question(request, survey_id=None):
 
                     # Process choices for this question
                     ChoiceFormset = ChoiceInlineFormset(
-                        request.POST, instance=question
-                    )  # Pass POST data for validation
+                        request.POST,
+                        instance=question,
+                        prefix=f'choices-{question_form.prefix}',
+                    )
                     if ChoiceFormset.is_valid():
                         choices = ChoiceFormset.save(commit=False)
                         for choice in choices:
@@ -159,8 +152,9 @@ def Insert_Question(request, survey_id=None):
     for question_form in question_formset:
         question = question_form.instance
         ChoiceFormset = ChoiceInlineFormset(
-            instance=question
-        )  # Prefill for existing questions
+            instance=question,
+            prefix=f'choices-{question_form.prefix}'
+        )  
         choice_formsets[question.pk or question_form.prefix] = ChoiceFormset
 
     return render(request, 'insert_question.html', {
