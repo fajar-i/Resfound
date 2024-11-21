@@ -44,7 +44,7 @@
                     {% if choice_formset %}
                     {{ choice_formset.management_form }}
                     {% for choice_form in choice_formset %}
-                    <div class="mb-2">
+                    <div class="mb-2 choice-forms">
                         {{ choice_form.as_p }}
                     </div>
                     {% endfor %}
@@ -73,67 +73,81 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const formContainer = document.querySelector('.form-container');
-            const totalFormsInput = document.querySelector('[name="form-TOTAL_FORMS"]');
+            const totalFormsInput = document.querySelector('[name="questions-TOTAL_FORMS"]');
 
-            // Define templates as JavaScript variables
-            const formTemplate = `
-                <div class="col-12 form border p-3 mb-3 bg-light rounded">
-                    {{ question_formset.empty_form.as_p|safe }}
-                    <div class="choices-container">
-                        <h6>Choices:</h6>
-                        <button type="button" class="btn btn-success btn-sm add-choice">Add Choice</button>
-                    </div>
-                    <button type="button" class="btn btn-danger btn-sm mt-2 delete-form">Remove</button>
-                </div>
-            `;
-
-            const choiceTemplate = `
-                <div class="mb-2 choice-item">
-                    <input type="hidden" name="choices-__prefix__-id" value="">
-                    <input type="text" class="form-control" name="choices-__prefix__-choice_text" placeholder="Enter choice">
+            const choiceFormTemplate = `
+                <div class="mb-2">
+                    <p>
+                        <label for="id_choices-__prefix__-choices_text">Choices text:</label>
+                        <input type="text" name="choices-__prefix__-choices_text" class="form-control" maxlength="1000" id="id_choices-__prefix__-choices_text">
+                    </p>
+                    <p>
+                        <label for="id_choices-__prefix__-DELETE">Delete:</label>
+                        <input type="checkbox" name="choices-__prefix__-DELETE" id="id_choices-__prefix__-DELETE">
+                        <input type="hidden" name="choices-__prefix__-id" id="id_choices-__prefix__-id">
+                        <input type="hidden" name="choices-__prefix__-question" value="52" id="id_choices-__prefix__-question">
+                    </p>
                 </div>
             `;
 
 
             // Add Question Form
             document.querySelector('.add-form').addEventListener('click', function () {
-                const formIndex = parseInt(totalFormsInput.value);
-                const newFormHtml = formTemplate.replace(/__prefix__/g, formIndex);
-
-                const formWrapper = document.createElement('div');
-                formWrapper.innerHTML = newFormHtml;
-                formContainer.appendChild(formWrapper.firstElementChild);
-
-                totalFormsInput.value = formIndex + 1; // Increment form count
-                attachChoiceListeners();
+                const formIndex = parseInt(totalFormsInput.value, 10);
+                const newFormHtml = `
+                    <div class="col-12 form border p-3 mb-3 bg-light rounded" data-question-index="${formIndex}">
+                        {{ question_formset.empty_form.as_p|safe }}
+                        <div class="choices-container">
+                            <h6>Choices:</h6>
+                            <input type="hidden" name="choices-${formIndex}-TOTAL_FORMS" value="0">
+                            <input type="hidden" name="choices-${formIndex}-INITIAL_FORMS" value="0">
+                            <div class="choice-forms"></div>
+                            <button type="button" class="btn btn-success btn-sm add-choice">Add Choice</button>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm mt-2 delete-form">Remove</button>
+                    </div>
+                `;
+                formContainer.insertAdjacentHTML("beforeend", newFormHtml);
+                totalFormsInput.value = formIndex + 1;
             });
 
-            // Attach Choice Listeners
-            function attachChoiceListeners() {
-                document.querySelectorAll('.add-choice').forEach(button => {
-                    button.addEventListener('click', function () {
-                        const choicesContainer = button.closest('.choices-container');
-                        const newChoiceHtml = choiceTemplate.replace(/__prefix__/g, totalFormsInput.value);
+            // Add Choice to a Question
+            formContainer.addEventListener('click', function (event) {
+                if (event.target.classList.contains('add-choice')) {
+                    const choicesContainer = event.target.closest('.choices-container');
+                    const totalChoicesInput = choicesContainer.querySelector('[name$="-TOTAL_FORMS"]');
 
-                        const choiceWrapper = document.createElement('div');
-                        choiceWrapper.innerHTML = newChoiceHtml;
-                        choicesContainer.insertBefore(choiceWrapper.firstElementChild, button);
-                    });
-                });
+                    if (!totalChoicesInput) {
+                        console.error("TOTAL_FORMS input not found for this question.");
+                        return;
+                    }
 
-                document.querySelectorAll('.delete-form').forEach(button => {
-                    button.addEventListener('click', function () {
-                        const form = button.closest('.form');
-                        form.remove();
-                        totalFormsInput.value = parseInt(totalFormsInput.value) - 1; // Decrement form count
-                    });
-                });
-            }
+                    const choiceIndex = parseInt(totalChoicesInput.value, 10);
 
-            // Initialize Listeners for Existing Forms
-            attachChoiceListeners();
+                    // Replace the prefix dynamically to match the question's choices
+                    const newChoiceHtml = choiceFormTemplate.replace(/__prefix__/g, `form-${choiceIndex}`);
+
+                    // Append the new choice form to the choices container
+                    choicesContainer.querySelector('.choice-forms').insertAdjacentHTML("beforeend", newChoiceHtml);
+
+                    // Increment the total choices count
+                    totalChoicesInput.value = choiceIndex + 1;
+                }
+            });
+
+
+            // Remove Question Form
+            formContainer.addEventListener('click', function (event) {
+                if (event.target.classList.contains('delete-form')) {
+                    const form = event.target.closest('.form');
+                    form.remove();
+                    totalFormsInput.value = parseInt(totalFormsInput.value, 10) - 1;
+                }
+            });
         });
+
     </script>
+
 </body>
 
 </html>
