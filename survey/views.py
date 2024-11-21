@@ -4,7 +4,7 @@ from django.db.models import Prefetch, Max
 from django.urls import reverse
 
 from .models import Survey, Question, QuestionType, ResponseChoice
-from .forms import FormToCreateSurvey, FormToCreateQuestion, FormToCreateChoices, questionsForm
+from .forms import FormToCreateSurvey, FormToCreateQuestion, FormToCreateChoices, questionsForm, ChoiceInlineFormset
 
 def home(request):
     return render(request, 'home.html')
@@ -103,41 +103,69 @@ def delete_question(request, question_id):
     else:
         return redirect('Insert_Question', survey_id=question.survey.id)
 
+
 def Insert_Question(request, survey_id=None):
-    # Get survey instance if editing; otherwise, None for creating
+    # Retrieve existing survey or initialize for creation
     survey = get_object_or_404(Survey, pk=survey_id) if survey_id else None
     is_edit_survey = survey is not None
 
-    # Initialize forms
-    survey_form = FormToCreateSurvey(request.POST or None, instance=survey)
+    # Initialize survey and question forms
+    survey_form = FormToCreateSurvey(
+        request.POST or None, 
+        instance=survey
+    )
     question_formset = questionsForm(
         request.POST or None,
         request.FILES or None,
-        queryset=survey.questions.all() if survey else Survey.objects.none()
+        queryset=survey.questions.all() if survey else Question.objects.none(),
     )
 
+    # # Initialize choice formsets for each question
+    # choice_formsets = {}
+    # for question_form in question_formset:
+    #     question = question_form.instance
+    #     if question.pk:  # Existing question
+    #         choice_formsets[question.pk] = ChoiceInlineFormset(instance=question)
+    #     else:  # New question
+    #         choice_formsets[question_form.prefix] = ChoiceInlineFormset(queryset=ResponseChoice.objects.none())
+
     if request.method == 'POST':
-        # Handle both forms' submission
+        # Handle form submission
         if survey_form.is_valid() and question_formset.is_valid():
-            # Save survey
             survey = survey_form.save(commit=False)
-            survey.user = request.user  # Ensure the user is assigned
+            survey.user = request.user
             survey.save()
 
-            # Save associated questions
-            question_instances = question_formset.save(commit=False)
-            for question in question_instances:
-                question.survey = survey  # Link questions to the survey
-                question.save()
-            question_formset.save_m2m()
+            for question_form in question_formset:
+                if question_form.cleaned_data.get('question_text'):  # Ensure valid question
+                    question = question_form.save(commit=False)
+                    question.survey = survey
+                    question.save()  
 
-            # Redirect to the same page or another appropriate view
+                    # Process choices for this question
+                    ChoiceFormset = ChoiceInlineFormset(
+                        request.POST, instance=question
+                    )  # Pass POST data for validation
+                    if ChoiceFormset.is_valid():
+                        choices = ChoiceFormset.save(commit=False)
+                        for choice in choices:
+                            choice.question = question
+                            choice.save()
+
             return redirect('Insert_Question', survey_id=survey.id)
 
-    # Render template
+    # Initialize choice formsets for rendering
+    choice_formsets = {}
+    for question_form in question_formset:
+        question = question_form.instance
+        ChoiceFormset = ChoiceInlineFormset(
+            instance=question
+        )  # Prefill for existing questions
+        choice_formsets[question.pk or question_form.prefix] = ChoiceFormset
+
     return render(request, 'insert_question.html', {
         'survey_form': survey_form,
-        'question_form': question_formset,
-        'survey': survey,
+        'question_formset': question_formset,
+        'choice_formsets': choice_formsets,
         'is_edit_survey': is_edit_survey,
     })

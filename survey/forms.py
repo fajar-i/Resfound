@@ -36,6 +36,12 @@ class FormToCreateChoices(forms.ModelForm):
         model = ResponseChoice
         fields = ['choices_text']
         widgets = {
-            'choices_text': forms.Textarea(attrs={'class': 'form-control'})
+            'choices_text': forms.TextInput(attrs={'class': 'form-control'})
         }
 
+ChoiceInlineFormset = inlineformset_factory(
+    Question,
+    ResponseChoice,
+    form=FormToCreateChoices,
+    extra=1
+)

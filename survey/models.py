@@ -50,7 +50,7 @@ class ResponseChoice(models.Model):
     choices_text = models.TextField(max_length=1000)
 
     def __str__(self):
-        return self.text
+        return self.choices_text
 
 
 class SurveyResponse(models.Model):
