@@ -1,0 +1,40 @@
+/* Add spacing and alignment for the form */
+#answer-form {
+    max-width: 600px; /* Limit the form's width */
+    margin: 20px auto; /* Center the form with auto margins */
+    padding: 20px; /* Add internal spacing */
+    background-color: #f8f9fa; /* Light gray background */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Style the submit button */
+#answer-form button {
+    width: 100%; /* Full-width button */
+    margin-top: 15px; /* Space above the button */
+    padding: 10px 15px; /* Adjust padding */
+    font-size: 16px; /* Larger text size for visibility */
+}
+
+/* Add custom styling for labels */
+#answer-form label {
+    font-weight: bold; /* Make labels stand out */
+    margin-bottom: 5px; /* Add space below labels */
+}
+
+/* Add custom styling for inputs */
+#answer-form input, #answer-form select, #answer-form textarea {
+    border: 1px solid #ced4da; /* Match Bootstrap's input border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 8px 10px; /* Adjust padding */
+    font-size: 14px; /* Consistent text size */
+    width: 100%; /* Full-width inputs */
+    margin-bottom: 15px; /* Space below inputs */
+}
+
+/* Hover effect for the submit button */
+#answer-form button:hover {
+    background-color: #0056b3; /* Darker blue */
+    color: #fff; /* White text */
+    transition: 0.3s ease; /* Smooth transition */
+}

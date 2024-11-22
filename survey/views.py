@@ -3,9 +3,10 @@ from django.contrib import messages
 from django.db.models import Prefetch, Max
 from django.urls import reverse
 from django.forms import modelformset_factory
+from django.contrib.auth.models import User
 
-from .models import Survey, Question, QuestionType, ResponseChoice
-from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset
+from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice
+from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey
 
 def home(request):
     return render(request, 'home.html')
@@ -13,15 +14,6 @@ def home(request):
 def list_my_survey(request):
     list_semua = Survey.objects.all()
     return render(request, 'my_survey.html', {'surveys': list_semua})
-
-def answer_survey(request, survey_id=None):
-    survey = get_object_or_404(Survey, id=survey_id)
-    list_question = Question.objects.filter(survey=survey)
-    
-    return render(request, 'answer_survey.html', {
-        'survey': survey,
-        'questions': list_question
-    })
 
 def delete_survey(request, survey_id):
     survey = get_object_or_404(Survey, id=survey_id)
@@ -116,9 +108,45 @@ def create_survey(request, survey_id=None):
 def answer_survey(request, survey_id=None):
     survey = get_object_or_404(Survey, id=survey_id)
     list_question = Question.objects.filter(survey=survey)
-    for_html = {
+
+    if request.method == 'POST':
+        form = FormToAnswerSurvey(list_question, request.POST)
+        if form.is_valid():
+            # Create a new SurveyResponse for the user
+            survey_response = SurveyResponse.objects.create(
+                survey=survey,
+                # user=request.user,  # Assuming the user is logged in
+                status='submitted'
+            )
+
+            # Save the responses to the database
+            for key, value in form.cleaned_data.items():
+                question_id = key.split('_')[1]
+                question = Question.objects.get(id=question_id)
+
+                # Check if it's a multiple choice question
+                if isinstance(value, list):  # Multiple choices, list of selected choices
+                    for choice_id in value:
+                        choice = ResponseChoice.objects.get(id=choice_id)
+                        Response.objects.create(
+                            user=request.user,
+                            survey_response=survey_response,
+                            question=question,
+                            answer=choice.choices_text
+                        )
+                else:  # Single choice or text input
+                    Response.objects.create(
+                        user=request.user,
+                        survey_response=survey_response,
+                        question=question,
+                        answer=value
+                    )
+
+            return redirect ('home')
+    else:
+        form = FormToAnswerSurvey(list_question)
+
+    return render(request, 'answer_survey.html', {
         'survey': survey,
-        'questions': list_question
-    }
-    return render(request, 'answer_survey.html', for_html)
-    
+        'form': form,
+    })

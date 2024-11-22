@@ -34,7 +34,10 @@
                         </p>
                         <p class="card-text">Created on: {{ survey.creation_date }}</p>
 
-                        <a href="{% url 'edit_survey' survey.id %}" class="btn btn-primary m-1">
+                        <a href="{% url 'answer_survey' survey.id %}" class="btn btn-secondary">
+                            Answer This Survey
+                        </a>
+                        <a href="{% url 'edit_survey' survey.id %}" class="btn btn-primary">
                             Edit Survey
                         </a>
 
@@ -67,7 +70,7 @@
         document.querySelectorAll('.show-delete-button').forEach((button, index) => {
             button.addEventListener('click', function () {
                 const hiddenButton = document.querySelectorAll('.real-delete-button')[index];
-                hiddenButton.style.display = 'block';
+                hiddenButton.style.display = 'inline-block';
 
                 const warningButton = document.querySelectorAll('.show-delete-button')[index];
                 warningButton.classList.remove('btn-danger');

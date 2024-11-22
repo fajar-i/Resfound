@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import modelformset_factory, inlineformset_factory
-from .models import Survey, Question, QuestionType, ResponseChoice, SurveyResponse
+from .models import Survey, Question, QuestionType, ResponseChoice, SurveyResponse, Response
 
 # Form to create a survey
 class FormToCreateSurvey(forms.ModelForm):
@@ -54,6 +54,24 @@ ChoiceInlineFormset = inlineformset_factory(
     can_delete=False  
 )
 
-# class FormToAnswerSurvey(forms.ModelForm):
-#     class Meta:
+class FormToAnswerSurvey(forms.Form):
+    def __init__(self, questions, *args, **kwargs):
+        super(FormToAnswerSurvey, self).__init__(*args, **kwargs)
+        for question in questions:
+            question_label = f"{question.question_order}. {question.question_text}"
+            choices = ResponseChoice.objects.filter(question=question)
+            if choices.exists():
+                self.fields[f"question_{question.id}"] = forms.ChoiceField(
+                    choices=[(choice.id, choice.choices_text) for choice in choices],
+                    widget=forms.RadioSelect,
+                    label=question_label,
+                    required=True
+                )
+            else:
+                self.fields[f"question_{question.id}"] = forms.CharField(
+                    label=question_label,
+                    widget=forms.TextInput(attrs={'class': 'form-control'}),
+                    required=True
+                )
+
         
