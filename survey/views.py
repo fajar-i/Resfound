@@ -33,7 +33,6 @@ def delete_question(request, question_id):
     else:
         return redirect('edit_survey', survey_id=question.survey.id)
 
-
 def create_survey(request, survey_id=None):
     # Retrieve existing survey or initialize for creation
     survey = get_object_or_404(Survey, pk=survey_id) if survey_id else None
@@ -104,3 +103,14 @@ def create_survey(request, survey_id=None):
         'choice_formsets': choice_formsets,
         'is_edit_survey': is_edit_survey,
     })
+
+    def answer_survey(request, survey_id=None):
+        survey = get_object_or_404(Survey, id=survey_id)
+        list_question = Question.objects.filter(survey=survey)
+
+        for_html = {
+            'survey': survey,
+            'questions': list_question
+        }
+        return render(request, 'answer_survey.html', for_html)
+    

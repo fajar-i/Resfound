@@ -67,7 +67,10 @@
         <!-- Buttons -->
         <div class="d-flex justify-content-between mt-3">
             <button type="button" class="btn btn-success add-form">Add Question</button>
-            <button type="submit" class="btn btn-primary">Save All</button>
+            <div>
+                <a href="{% url 'list_my_survey' %}" class="btn btn-secondary">Return</a>
+                <button type="submit" class="btn btn-primary">Save All</button>
+            </div>
         </div>
     </form>
 
