@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import modelformset_factory, inlineformset_factory
-from .models import Survey, Question, QuestionType, ResponseChoice
+from .models import Survey, Question, QuestionType, ResponseChoice, SurveyResponse
 
 # Form to create a survey
 class FormToCreateSurvey(forms.ModelForm):
@@ -60,3 +60,7 @@ ChoiceInlineFormset = inlineformset_factory(
     extra=1,
     can_delete=False  
 )
+
+# class FormToAnswerSurvey(forms.ModelForm):
+#     class Meta:
+        

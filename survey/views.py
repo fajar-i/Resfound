@@ -14,6 +14,15 @@ def list_my_survey(request):
     list_semua = Survey.objects.all()
     return render(request, 'my_survey.html', {'surveys': list_semua})
 
+def answer_survey(request, survey_id=None):
+    survey = get_object_or_404(Survey, id=survey_id)
+    list_question = Question.objects.filter(survey=survey)
+    
+    return render(request, 'answer_survey.html', {
+        'survey': survey,
+        'questions': list_question
+    })
+
 def delete_survey(request, survey_id):
     survey = get_object_or_404(Survey, id=survey_id)
     if request.method == 'POST':
@@ -103,14 +112,4 @@ def create_survey(request, survey_id=None):
         'choice_formsets': choice_formsets,
         'is_edit_survey': is_edit_survey,
     })
-
-    def answer_survey(request, survey_id=None):
-        survey = get_object_or_404(Survey, id=survey_id)
-        list_question = Question.objects.filter(survey=survey)
-
-        for_html = {
-            'survey': survey,
-            'questions': list_question
-        }
-        return render(request, 'answer_survey.html', for_html)
     
