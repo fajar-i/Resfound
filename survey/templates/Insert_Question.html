@@ -84,9 +84,13 @@
                         <input type="hidden" name="choices-__prefix__-TOTAL_FORMS" value="0">
                         <input type="hidden" name="choices-__prefix__-INITIAL_FORMS" value="0">
                         <div class="choice-forms"></div>
-                        <button type="button" class="btn btn-success btn-sm add-choice">Add Choice</button>
                     </div>
-                    <button type="button" class="btn btn-danger btn-sm mt-2 delete-form">Remove</button>
+                    {% if form.instance.pk %}
+                        <button type="button" class="btn btn-success btn-sm add-choice">Add Choice</button>
+                        <a href="{% url 'delete_question' form.instance.pk %}" class="btn btn-danger btn-sm">Remove</a>
+                    {% else %}
+                        <button type="submit" class="btn btn-success btn-sm">Add Choice</button>
+                    {% endif %}
                 </div>
             `;
             const choiceTemplate = `
