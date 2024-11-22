@@ -54,10 +54,11 @@
                     {% endif %}
                     {% endwith %}
                 </div>
-                <button type="button" class="btn btn-success btn-sm add-choice">Add Choice</button>
-
                 {% if form.instance.pk %}
-                <a href="{% url 'delete_question' form.instance.pk %}" class="btn btn-danger btn-sm mt-2">Remove</a>
+                <button type="button" class="btn btn-success btn-sm add-choice">Add Choice</button>
+                <a href="{% url 'delete_question' form.instance.pk %}" class="btn btn-danger btn-sm">Remove</a>
+                {% else %}
+                <button type="submit" class="btn btn-success btn-sm">Add Choice</button>
                 {% endif %}
             </div>
             {% endfor %}
@@ -91,15 +92,12 @@
             const choiceTemplate = `
                 <div class="mb-2 choice-forms">
                     <p>
-                        <label for="id_choices-form-__questionIndex__-__choiceIndex__-choices_text">Choice text:</label>
                         <input type="text" name="choices-form-__questionIndex__-__choiceIndex__-choices_text" 
-                               value="jawaban" class="form-control" maxlength="1000" 
+                               value="jawaban" class="form-control" maxlength="1000 placeholder="Enter choice text" 
                                id="id_choices-form-__questionIndex__-__choiceIndex__-choices_text">
                     </p>
                     <p>
                         <label for="id_choices-form-__questionIndex__-__choiceIndex__-DELETE">Delete:</label>
-                        <input type="checkbox" name="choices-form-__questionIndex__-__choiceIndex__-DELETE" 
-                               id="id_choices-form-__questionIndex__-__choiceIndex__-DELETE">
                         <input type="hidden" name="choices-form-__questionIndex__-__choiceIndex__-id" value="">
                         <input type="hidden" name="choices-form-__questionIndex__-__choiceIndex__-question" 
                                value="__questionID__" id="id_choices-form-__questionIndex__-__choiceIndex__-question">

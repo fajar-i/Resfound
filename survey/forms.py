@@ -23,6 +23,13 @@ class FormToCreateQuestion(forms.ModelForm):
             'question_order': forms.NumberInput(attrs={'class': 'form-control'}),
             'img': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Set default values
+        if not self.instance.pk:  # Only apply defaults to new instances
+            self.fields['question_type'].initial = 1  # Default value for question_type
+
 # Create a modelformset for Questions
 questionsForm = modelformset_factory(
     Question,
@@ -35,13 +42,21 @@ class FormToCreateChoices(forms.ModelForm):
     class Meta:
         model = ResponseChoice
         fields = ['choices_text']
-        widgets = {
-            'choices_text': forms.TextInput(attrs={'class': 'form-control'})
+        labels = {
+            'choices_text': '',  # Remove the label
         }
+        widgets = {
+            'choices_text': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Enter choice text'
+            })
+        }
+
 
 ChoiceInlineFormset = inlineformset_factory(
     Question,
     ResponseChoice,
     form=FormToCreateChoices,
-    extra=1
+    extra=1,
+    can_delete=False  
 )
