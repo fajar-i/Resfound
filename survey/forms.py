@@ -30,13 +30,6 @@ class FormToCreateQuestion(forms.ModelForm):
         if not self.instance.pk:  # Only apply defaults to new instances
             self.fields['question_type'].initial = 1  # Default value for question_type
 
-# Create a modelformset for Questions
-questionsForm = modelformset_factory(
-    Question,
-    form=FormToCreateQuestion,  # Use the FormToCreateQuestion for customization
-    extra=0,
-)
-
 # Form to create response choices
 class FormToCreateChoices(forms.ModelForm):
     class Meta:
