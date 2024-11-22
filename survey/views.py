@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.db.models import Prefetch, Max
 from django.urls import reverse
+from django.forms import modelformset_factory
 
 from .models import Survey, Question, QuestionType, ResponseChoice
 from .forms import FormToCreateSurvey, FormToCreateQuestion, FormToCreateChoices, questionsForm, ChoiceInlineFormset
@@ -103,23 +104,29 @@ def delete_question(request, question_id):
     else:
         return redirect('Insert_Question', survey_id=question.survey.id)
 
-
 def Insert_Question(request, survey_id=None):
     # Retrieve existing survey or initialize for creation
-    # print(request.POST)
-
     survey = get_object_or_404(Survey, pk=survey_id) if survey_id else None
     is_edit_survey = survey is not None
 
-    # Initialize survey and question forms
+    # Initialize survey form
     survey_form = FormToCreateSurvey(
-        request.POST or None, 
+        request.POST or None,
         instance=survey
     )
-    question_formset = questionsForm(
+
+    # Adjust extra forms based on existing questions
+    extra_forms = 0 if survey and survey.questions.exists() else 1
+    QuestionFormSet = modelformset_factory(
+        Question,
+        form=FormToCreateQuestion,
+        extra=extra_forms
+    )
+
+    question_formset = QuestionFormSet(
         request.POST or None,
         request.FILES or None,
-        queryset=survey.questions.all() if survey else Question.objects.none(),
+        queryset=survey.questions.all() if survey else Question.objects.none()
     )
 
     if request.method == 'POST':
@@ -132,24 +139,22 @@ def Insert_Question(request, survey_id=None):
             for question_form in question_formset:
                 if question_form.is_valid():
                     question = question_form.save(commit=False)
-                if not question.question_type_id:
-                    question.question_type_id = 1  
-                if question.question_text :
-                    question.survey = survey
-                    question.save()  
-                # Process choices for this question
-                ChoiceFormset = ChoiceInlineFormset(
-                    request.POST,
-                    instance=question,
-                    prefix=f'choices-{question_form.prefix}',
-                )
-                print(ChoiceFormset)
-                if ChoiceFormset.is_valid():
-                    print(ChoiceFormset.cleaned_data)
-                    choices = ChoiceFormset.save(commit=False)
-                    for choice in choices:
-                        choice.question = question
-                        choice.save()
+                    if not question.question_type_id:
+                        question.question_type_id = 1
+                    if question.question_text:
+                        question.survey = survey
+                        question.save()
+                    # Process choices for this question
+                    ChoiceFormset = ChoiceInlineFormset(
+                        request.POST,
+                        instance=question,
+                        prefix=f'choices-{question_form.prefix}',
+                    )
+                    if ChoiceFormset.is_valid():
+                        choices = ChoiceFormset.save(commit=False)
+                        for choice in choices:
+                            choice.question = question
+                            choice.save()
 
             return redirect('Insert_Question', survey_id=survey.id)
 
@@ -160,7 +165,7 @@ def Insert_Question(request, survey_id=None):
         ChoiceFormset = ChoiceInlineFormset(
             instance=question,
             prefix=f'choices-{question_form.prefix}'
-        )  
+        )
         choice_formsets[question.pk or question_form.prefix] = ChoiceFormset
 
     return render(request, 'insert_question.html', {
