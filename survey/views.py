@@ -106,6 +106,8 @@ def delete_question(request, question_id):
 
 def Insert_Question(request, survey_id=None):
     # Retrieve existing survey or initialize for creation
+    # print(request.POST)
+
     survey = get_object_or_404(Survey, pk=survey_id) if survey_id else None
     is_edit_survey = survey is not None
 
@@ -128,22 +130,26 @@ def Insert_Question(request, survey_id=None):
             survey.save()
 
             for question_form in question_formset:
-                if question_form.cleaned_data.get('question_text'):  # Ensure valid question
+                if question_form.is_valid():
                     question = question_form.save(commit=False)
+                if not question.question_type_id:
+                    question.question_type_id = 1  
+                if question.question_text :
                     question.survey = survey
                     question.save()  
-
-                    # Process choices for this question
-                    ChoiceFormset = ChoiceInlineFormset(
-                        request.POST,
-                        instance=question,
-                        prefix=f'choices-{question_form.prefix}',
-                    )
-                    if ChoiceFormset.is_valid():
-                        choices = ChoiceFormset.save(commit=False)
-                        for choice in choices:
-                            choice.question = question
-                            choice.save()
+                # Process choices for this question
+                ChoiceFormset = ChoiceInlineFormset(
+                    request.POST,
+                    instance=question,
+                    prefix=f'choices-{question_form.prefix}',
+                )
+                print(ChoiceFormset)
+                if ChoiceFormset.is_valid():
+                    print(ChoiceFormset.cleaned_data)
+                    choices = ChoiceFormset.save(commit=False)
+                    for choice in choices:
+                        choice.question = question
+                        choice.save()
 
             return redirect('Insert_Question', survey_id=survey.id)
 
