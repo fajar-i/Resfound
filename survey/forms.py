@@ -34,7 +34,7 @@ class FormToCreateQuestion(forms.ModelForm):
 questionsForm = modelformset_factory(
     Question,
     form=FormToCreateQuestion,  # Use the FormToCreateQuestion for customization
-    extra=1,
+    extra=0,
 )
 
 # Form to create response choices
