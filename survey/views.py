@@ -51,7 +51,6 @@ def create_survey(request, survey_id=None):
         Question,
         form=FormToCreateQuestion,
         extra=extra_forms,
-        can_delete=True
     )
 
     question_formset = QuestionFormSet(
@@ -100,7 +99,7 @@ def create_survey(request, survey_id=None):
                             choice.save()
 
             return redirect('edit_survey', survey_id=survey.id)
-            
+
     # Initialize choice formsets for rendering
     choice_formsets = {}
     for i, question_form in enumerate(question_formset):
