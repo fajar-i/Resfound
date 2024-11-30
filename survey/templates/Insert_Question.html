@@ -11,7 +11,7 @@
 </head>
 
 <body style="max-width: 800px; margin: auto;">
-    <h1 class="text-center mb-4">
+    <h1 class="text-center mb-2">
         {% if is_edit_survey %}
         Edit Survey
         {% else %}
@@ -54,11 +54,9 @@
                     {% endif %}
                     {% endwith %}
                 </div>
-                {% if form.instance.pk %}
                 <button type="button" class="btn btn-success btn-sm add-choice">Add Choice</button>
+                {% if form.instance.pk %}
                 <a href="{% url 'delete_question' form.instance.pk %}" class="btn btn-danger btn-sm">Remove</a>
-                {% else %}
-                <button type="submit" class="btn btn-success btn-sm">Add Choice</button>
                 {% endif %}
             </div>
             {% endfor %}
@@ -79,20 +77,30 @@
             const formContainer = document.querySelector('.form-container');
             const totalFormsInput = document.querySelector('[name="form-TOTAL_FORMS"]');
             const questionTemplate = `
-                <div class="col-12 form border p-3 mb-3 bg-light rounded">
+                <div class="col-12 form border p-3 mb-3 bg-light rounded" data-question-index="__prefix__">
                     <h5 class="questionIndex">New Question</h5>
                     {{ question_formset.empty_form.as_p|safe }}
                     <div class="choices-container">
                         <h6>Choices:</h6>
-                        <input type="hidden" name="choices-__prefix__-TOTAL_FORMS" value="0">
-                        <input type="hidden" name="choices-__prefix__-INITIAL_FORMS" value="0">
-                        <div class="choice-forms"></div>
+
+                        <input type="hidden" name="choices-form-__prefix__-TOTAL_FORMS" value="1" id="id_choices-form-__prefix__-TOTAL_FORMS" value="Q__prefix__">
+                        <input type="hidden" name="choices-form-__prefix__-INITIAL_FORMS" value="0" id="id_choices-form-__prefix__-INITIAL_FORMS">
+                        <input type="hidden" name="choices-form-__prefix__-MIN_NUM_FORMS" value="0" id="id_choices-form-__prefix__-MIN_NUM_FORMS"> 
+                        <input type="hidden" name="choices-form-__prefix__-MAX_NUM_FORMS" value="1000" id="id_choices-form-__prefix__-MAX_NUM_FORMS">
+
+                        <div class="mb-2 choice-forms">
+                            <p>
+                                <input type="text" name="choices-form-__prefix__-0-choices_text" class="form-control" placeholder="Enter choice text"
+                                    maxlength="1000" id="id_choices-form-__prefix__-0-choices_text">
+                                <input type="hidden" name="choices-form-__prefix__-0-id" id="id_choices-form-__prefix__-0-id"><input type="hidden"
+                                    name="choices-form-__prefix__-0-question" value="" id="id_choices-form-__prefix__-0-question">
+                            </p>
+                        </div>
+
                     </div>
+                    <button type="button" class="btn btn-success btn-sm add-choice">Add Choice</button>
                     {% if form.instance.pk %}
-                        <button type="button" class="btn btn-success btn-sm add-choice">Add Choice</button>
                         <a href="{% url 'delete_question' form.instance.pk %}" class="btn btn-danger btn-sm">Remove</a>
-                    {% else %}
-                        <button type="submit" class="btn btn-success btn-sm">Add Choice</button>
                     {% endif %}
                 </div>
             `;
@@ -102,8 +110,6 @@
                         <input type="text" name="choices-form-__questionIndex__-__choiceIndex__-choices_text" 
                                value="" class="form-control" maxlength="1000 placeholder="Enter choice text" 
                                id="id_choices-form-__questionIndex__-__choiceIndex__-choices_text">
-                    </p>
-                    <p>
                         <input type="hidden" name="choices-form-__questionIndex__-__choiceIndex__-id" value="">
                         <input type="hidden" name="choices-form-__questionIndex__-__choiceIndex__-question" 
                                value="__questionID__" id="id_choices-form-__questionIndex__-__choiceIndex__-question">

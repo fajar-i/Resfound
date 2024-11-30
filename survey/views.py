@@ -33,7 +33,7 @@ def delete_question(request, question_id):
         return redirect('edit_survey', survey_id=survey.id)
     else:
         return redirect('edit_survey', survey_id=question.survey.id)
-
+        
 def create_survey(request, survey_id=None):
     # Retrieve existing survey or initialize for creation
     survey = get_object_or_404(Survey, pk=survey_id) if survey_id else None
@@ -50,7 +50,8 @@ def create_survey(request, survey_id=None):
     QuestionFormSet = modelformset_factory(
         Question,
         form=FormToCreateQuestion,
-        extra=extra_forms
+        extra=extra_forms,
+        can_delete=True
     )
 
     question_formset = QuestionFormSet(
@@ -60,43 +61,55 @@ def create_survey(request, survey_id=None):
     )
 
     if request.method == 'POST':
-        # Handle form submission
         if survey_form.is_valid() and question_formset.is_valid():
+            # Save survey instance
             survey = survey_form.save(commit=False)
             survey.user = request.user
             survey.save()
 
-            for question_form in question_formset:
-                if question_form.is_valid():
+            # Save questions
+            question_mapping = {}
+
+            for i, question_form in enumerate(question_formset):
+                if question_form.cleaned_data.get('DELETE'):
+                    # Handle deletion
+                    if question_form.instance.pk:
+                        question_form.instance.delete()
+                else:
                     question = question_form.save(commit=False)
-                    if not question.question_type_id:
-                        question.question_type_id = 1
+                    question.survey = survey
                     if question.question_text:
-                        question.survey = survey
                         question.save()
-                    # Process choices for this question
-                    ChoiceFormset = ChoiceInlineFormset(
-                        request.POST,
-                        instance=question,
-                        prefix=f'choices-{question_form.prefix}',
-                    )
-                    if ChoiceFormset.is_valid():
-                        choices = ChoiceFormset.save(commit=False)
-                        for choice in choices:
+                        question_mapping[f"form-{i}"] = question
+            
+            # Save choices for each question
+            for prefix, question in question_mapping.items():
+                choice_formset_prefix = f'choices-{prefix}'
+
+                ChoiceFormset = ChoiceInlineFormset(
+                    request.POST,
+                    instance=question,
+                    prefix=choice_formset_prefix
+                )
+
+                if ChoiceFormset.is_valid():
+                    choices = ChoiceFormset.save(commit=False)
+                    for choice in choices:
+                        if choice.choices_text.strip():  # Ensure non-empty choices
                             choice.question = question
                             choice.save()
 
             return redirect('edit_survey', survey_id=survey.id)
-
+            
     # Initialize choice formsets for rendering
     choice_formsets = {}
-    for question_form in question_formset:
+    for i, question_form in enumerate(question_formset):
         question = question_form.instance
         ChoiceFormset = ChoiceInlineFormset(
             instance=question,
-            prefix=f'choices-{question_form.prefix}'
+            prefix=f'choices-form-{i}'
         )
-        choice_formsets[question.pk or question_form.prefix] = ChoiceFormset
+        choice_formsets[question.pk or f'form-{i}'] = ChoiceFormset
 
     return render(request, 'insert_question.html', {
         'survey_form': survey_form,
@@ -104,6 +117,7 @@ def create_survey(request, survey_id=None):
         'choice_formsets': choice_formsets,
         'is_edit_survey': is_edit_survey,
     })
+
 
 def answer_survey(request, survey_id=None):
     survey = get_object_or_404(Survey, id=survey_id)
