@@ -42,6 +42,7 @@
                 <div class="choices-container">
                     <h6>Choices:</h6>
                     {% with choice_formsets|get_item:form.instance.pk as choice_formset %}
+
                     {% if choice_formset %}
                     {{ choice_formset.management_form }}
                     {% for choice_form in choice_formset %}
@@ -49,9 +50,30 @@
                         {{ choice_form.as_p }}
                     </div>
                     {% endfor %}
+
                     {% else %}
-                    <p>No choices available.</p>
+                    <input type="hidden" name="choices-form-0-TOTAL_FORMS" value="1"
+                        id="id_choices-form-0-TOTAL_FORMS" value="Q0">
+                    <input type="hidden" name="choices-form-0-INITIAL_FORMS" value="0"
+                        id="id_choices-form-0-INITIAL_FORMS">
+                    <input type="hidden" name="choices-form-0-MIN_NUM_FORMS" value="0"
+                        id="id_choices-form-0-MIN_NUM_FORMS">
+                    <input type="hidden" name="choices-form-0-MAX_NUM_FORMS" value="1000"
+                        id="id_choices-form-0-MAX_NUM_FORMS">
+
+                    <div class="mb-2 choice-forms">
+                        <p>
+                            <input type="text" name="choices-form-0-0-choices_text" class="form-control"
+                                placeholder="Enter choice text" maxlength="1000"
+                                id="id_choices-form-0-0-choices_text">
+                            <input type="hidden" name="choices-form-0-0-id"
+                                id="id_choices-form-0-0-id"><input type="hidden"
+                                name="choices-form-0-0-question" value=""
+                                id="id_choices-form-0-0-question">
+                        </p>
+                    </div>
                     {% endif %}
+                    
                     {% endwith %}
                 </div>
                 <button type="button" class="btn btn-success btn-sm add-choice">Add Choice</button>
