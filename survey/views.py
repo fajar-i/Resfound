@@ -139,7 +139,7 @@ def edit_survey(request, survey_id):
         survey.description = request.POST['description']
         survey.save()
         return HttpResponse("Survey edited successfully")  # Arahkan ke halaman lain jika perlu
-    return render(request, 'survey/edit_survey.html', {'survey': survey})
+    return render(request, 'edit_survey.html', {'survey': survey})
 
 
 def create_survey(request, survey_id=None):

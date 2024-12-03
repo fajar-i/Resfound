@@ -130,7 +130,7 @@ USE_I18N = True
 USE_TZ = True
 
 LOGIN_URL = '/survey/login/'  # Ganti dengan path yang diinginkan
-LOGIN_REDIRECT_URL = '/'      # Redirect setelah berhasil login
+LOGIN_REDIRECT_URL = 'login'      # Redirect setelah berhasil login
 LOGOUT_REDIRECT_URL = '/'     # Redirect setelah logout
 
 
@@ -152,5 +152,3 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'abyanlaksono@upi.edu'  # Ganti dengan email Anda
 EMAIL_HOST_PASSWORD = 'oiws nksf rgav iwfe'  # Ganti dengan password email Anda
 
-# Pengaturan pengalihan setelah login
-LOGIN_REDIRECT_URL = 'login'  # Atau arahkan ke halaman yang sesuai
