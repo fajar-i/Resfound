@@ -4,10 +4,101 @@ from django.db.models import Prefetch, Max
 from django.urls import reverse
 from django.forms import modelformset_factory
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
 
 from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice
 from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView,PasswordResetForm
 
+def prevent_logged_in_access(get_response):
+    def middleware(request):
+        if request.path == '/login/' and request.user.is_authenticated:
+            return redirect('home')  # Arahkan pengguna ke home jika sudah login
+        response = get_response(request)
+        return response
+    return middleware
+
+
+# Akun Pengguna
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            
+            if user is not None:
+                login(request, user)
+                
+                # Cek apakah user admin atau bukan
+                if user.is_staff:  # Jika admin
+                    return redirect('/admin/')  # Redirect ke halaman admin
+                else:  # Jika user biasa
+                    return redirect('home')  # Redirect ke halaman home untuk user
+            else:
+                messages.error(request, "Username atau password salah.")
+        else:
+            messages.error(request, "Form tidak valid.")
+    else:
+        form = AuthenticationForm()
+        
+    return render(request, 'login.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+@login_required
+def home_view(request):
+    return render(request, 'home.html')
+
+def register_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+
+        if password1 != password2:
+            messages.error(request, "Password tidak cocok!")
+        elif User.objects.filter(username=username).exists():
+            messages.error(request, "Username sudah digunakan!")
+        elif User.objects.filter(email=email).exists():
+            messages.error(request, "Email sudah terdaftar!")
+        else:
+            user = User.objects.create_user(username=username, email=email, password=password1)
+            user.save()
+            messages.success(request, "Akun berhasil dibuat!")
+            return redirect('login')
+
+    return render(request, 'register.html')
+    
+def reset_password_view(request):
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            if User.objects.filter(email=email).exists():
+                form.save(
+                    request=request,
+                    use_https=request.is_secure(),
+                    email_template_name='registration/password_reset_email.html',  # Pastikan template ini ada
+                )
+                # Redirect ke halaman login dengan pesan konfirmasi
+                messages.success(request, "Link untuk reset password telah dikirim ke email Anda.")
+                return redirect("login")  # Ganti dengan nama URL login Anda
+            else:
+                form.add_error("email", "Email tidak ditemukan.")
+    else:
+        form = PasswordResetForm()
+    
+    return render(request, "reset_password.html", {"form": form})
+
+
+# Survey
 def home(request):
     return render(request, 'home.html')
 
@@ -28,30 +119,36 @@ def delete_survey(request, survey_id):
 def delete_question(request, question_id):
     question = get_object_or_404(Question, id=question_id)
     if request.method == 'POST' or 'GET':
-        survey = question.survey  # Get the related survey
-        question.delete()  # Delete the question
+        survey = question.survey
+        question.delete()
         return redirect('edit_survey', survey_id=survey.id)
     else:
         return redirect('edit_survey', survey_id=question.survey.id)
-        
+# survey/views.py
+from django.shortcuts import render, get_object_or_404
+from .models import Survey
+from django.http import HttpResponse
+
+def edit_survey(request, survey_id):
+    # Mengambil survey berdasarkan ID
+    survey = get_object_or_404(Survey, id=survey_id)
+    
+    if request.method == "POST":
+        # Logika untuk memproses pengeditan survey
+        survey.title = request.POST['title']
+        survey.description = request.POST['description']
+        survey.save()
+        return HttpResponse("Survey edited successfully")  # Arahkan ke halaman lain jika perlu
+    return render(request, 'survey/edit_survey.html', {'survey': survey})
+
+
 def create_survey(request, survey_id=None):
-    # Retrieve existing survey or initialize for creation
     survey = get_object_or_404(Survey, pk=survey_id) if survey_id else None
     is_edit_survey = survey is not None
 
-    # Initialize survey form
-    survey_form = FormToCreateSurvey(
-        request.POST or None,
-        instance=survey
-    )
-
-    # Adjust extra forms based on existing questions
+    survey_form = FormToCreateSurvey(request.POST or None, instance=survey)
     extra_forms = 0 if survey and survey.questions.exists() else 1
-    QuestionFormSet = modelformset_factory(
-        Question,
-        form=FormToCreateQuestion,
-        extra=extra_forms,
-    )
+    QuestionFormSet = modelformset_factory(Question, form=FormToCreateQuestion, extra=extra_forms)
 
     question_formset = QuestionFormSet(
         request.POST or None,
@@ -61,17 +158,13 @@ def create_survey(request, survey_id=None):
 
     if request.method == 'POST':
         if survey_form.is_valid() and question_formset.is_valid():
-            # Save survey instance
             survey = survey_form.save(commit=False)
             survey.user = request.user
             survey.save()
 
-            # Save questions
             question_mapping = {}
-
             for i, question_form in enumerate(question_formset):
                 if question_form.cleaned_data.get('DELETE'):
-                    # Handle deletion
                     if question_form.instance.pk:
                         question_form.instance.delete()
                 else:
@@ -80,27 +173,23 @@ def create_survey(request, survey_id=None):
                     if question.question_text:
                         question.save()
                         question_mapping[f"form-{i}"] = question
-            
-            # Save choices for each question
+
             for prefix, question in question_mapping.items():
                 choice_formset_prefix = f'choices-{prefix}'
-
                 ChoiceFormset = ChoiceInlineFormset(
                     request.POST,
                     instance=question,
                     prefix=choice_formset_prefix
                 )
-
                 if ChoiceFormset.is_valid():
                     choices = ChoiceFormset.save(commit=False)
                     for choice in choices:
-                        if choice.choices_text.strip():  # Ensure non-empty choices
+                        if choice.choices_text.strip():
                             choice.question = question
                             choice.save()
 
             return redirect('edit_survey', survey_id=survey.id)
 
-    # Initialize choice formsets for rendering
     choice_formsets = {}
     for i, question_form in enumerate(question_formset):
         question = question_form.instance
@@ -117,7 +206,6 @@ def create_survey(request, survey_id=None):
         'is_edit_survey': is_edit_survey,
     })
 
-
 def answer_survey(request, survey_id=None):
     survey = get_object_or_404(Survey, id=survey_id)
     list_question = Question.objects.filter(survey=survey)
@@ -125,20 +213,15 @@ def answer_survey(request, survey_id=None):
     if request.method == 'POST':
         form = FormToAnswerSurvey(list_question, request.POST)
         if form.is_valid():
-            # Create a new SurveyResponse for the user
             survey_response = SurveyResponse.objects.create(
                 survey=survey,
-                # user=request.user,  # Assuming the user is logged in
                 status='submitted'
             )
-
-            # Save the responses to the database
             for key, value in form.cleaned_data.items():
                 question_id = key.split('_')[1]
                 question = Question.objects.get(id=question_id)
 
-                # Check if it's a multiple choice question
-                if isinstance(value, list):  # Multiple choices, list of selected choices
+                if isinstance(value, list):
                     for choice_id in value:
                         choice = ResponseChoice.objects.get(id=choice_id)
                         Response.objects.create(
@@ -147,15 +230,14 @@ def answer_survey(request, survey_id=None):
                             question=question,
                             answer=choice.choices_text
                         )
-                else:  # Single choice or text input
+                else:
                     Response.objects.create(
                         user=request.user,
                         survey_response=survey_response,
                         question=question,
                         answer=value
                     )
-
-            return redirect ('home')
+            return redirect('home')
     else:
         form = FormToAnswerSurvey(list_question)
 

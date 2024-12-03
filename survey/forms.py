@@ -1,6 +1,12 @@
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 from django.forms import modelformset_factory, inlineformset_factory
 from .models import Survey, Question, QuestionType, ResponseChoice, SurveyResponse, Response
+
+# Login Form
+class LoginForm(AuthenticationForm):
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
 
 # Form to create a survey
 class FormToCreateSurvey(forms.ModelForm):
@@ -45,7 +51,6 @@ class FormToCreateChoices(forms.ModelForm):
             })
         }
 
-
 ChoiceInlineFormset = inlineformset_factory(
     Question,
     ResponseChoice,
@@ -73,5 +78,3 @@ class FormToAnswerSurvey(forms.Form):
                     widget=forms.TextInput(attrs={'class': 'form-control'}),
                     required=True
                 )
-
-        

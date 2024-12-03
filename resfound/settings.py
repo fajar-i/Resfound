@@ -12,6 +12,14 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import environ
+
+# Ambil variabel dari file .env
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Membaca file .env (security.env)
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, 'security.env'))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -49,14 +57,18 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'resfound.middleware.DisableCacheMiddleware',  # Tambahkan middleware Anda di sini
+    
 ]
+
+
 
 ROOT_URLCONF = 'resfound.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'survey')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,9 +91,9 @@ WSGI_APPLICATION = 'resfound.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'resfound',
+        'NAME': 'depilkom',
         'USER' : 'root',
-        'PASSWORD' : 'password',
+        'PASSWORD' : '',
         'HOST' : 'localhost',
         'port' : '3306'
     }
@@ -117,6 +129,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+LOGIN_URL = '/survey/login/'  # Ganti dengan path yang diinginkan
+LOGIN_REDIRECT_URL = '/'      # Redirect setelah berhasil login
+LOGOUT_REDIRECT_URL = '/'     # Redirect setelah logout
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -127,3 +143,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Pengaturan email di Django (gunakan Gmail sebagai contoh)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'abyanlaksono@upi.edu'  # Ganti dengan email Anda
+EMAIL_HOST_PASSWORD = 'oiws nksf rgav iwfe'  # Ganti dengan password email Anda
+
+# Pengaturan pengalihan setelah login
+LOGIN_REDIRECT_URL = 'login'  # Atau arahkan ke halaman yang sesuai
