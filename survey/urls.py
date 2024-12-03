@@ -9,7 +9,6 @@ urlpatterns = [
     path('', login_view, name='login'),  # Halaman utama diarahkan ke login
 
     # URL dari aplikasi survei
-    path('admin/', admin.site.urls),
     path('login/', login_view, name='login'),
     path('list_my_survey/', views.list_my_survey, name='list_my_survey'),
     path('fyp/', views.list_my_survey, name='fyp'),

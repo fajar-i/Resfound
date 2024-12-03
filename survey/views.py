@@ -160,6 +160,7 @@ def create_survey(request, survey_id=None):
         if survey_form.is_valid() and question_formset.is_valid():
             survey = survey_form.save(commit=False)
             survey.user = request.user
+            total_price = 0
             survey.save()
 
             question_mapping = {}
@@ -171,6 +172,10 @@ def create_survey(request, survey_id=None):
                     question = question_form.save(commit=False)
                     question.survey = survey
                     if question.question_text:
+
+                        question_type = get_object_or_404(QuestionType, name=question.question_type)
+                        total_price += question_type.price
+                    
                         question.save()
                         question_mapping[f"form-{i}"] = question
 
@@ -188,6 +193,8 @@ def create_survey(request, survey_id=None):
                             choice.question = question
                             choice.save()
 
+            survey.total_price = total_price
+            survey.save()
             return redirect('edit_survey', survey_id=survey.id)
 
     choice_formsets = {}
