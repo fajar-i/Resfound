@@ -163,3 +163,21 @@ def answer_survey(request, survey_id=None):
         'survey': survey,
         'form': form,
     })
+
+from django.http.response import Http404
+from django.http.response import JsonResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response 
+from .serializers import SurveySerializer
+
+class SurveyView(APIView):
+    def post(self, request):
+        data = request.data
+        serializer = SurveySerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse("Sukses", safe = false)
+        
+        return JsonResponse("Fail", safe = false)
+

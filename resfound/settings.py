@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'survey',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -81,7 +82,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'resfound',
         'USER' : 'root',
-        'PASSWORD' : 'password',
+        'PASSWORD' : 'dawn',
         'HOST' : 'localhost',
         'port' : '3306'
     }
