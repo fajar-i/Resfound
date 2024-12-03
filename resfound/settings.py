@@ -91,9 +91,9 @@ WSGI_APPLICATION = 'resfound.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'depilkom',
+        'NAME': 'resfound',
         'USER' : 'root',
-        'PASSWORD' : '',
+        'PASSWORD' : 'password',
         'HOST' : 'localhost',
         'port' : '3306'
     }
