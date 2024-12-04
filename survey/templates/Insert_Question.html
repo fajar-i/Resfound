@@ -11,13 +11,15 @@
 </head>
 
 <body style="max-width: 800px; margin: auto;">
-    <h1 class="text-center mb-2">
-        {% if is_edit_survey %}
-        Edit Survey
-        {% else %}
-        Create New Survey
-        {% endif %}
-    </h1>
+    <div class="container rounded bg-primary p-1 my-1">
+        <h1 class="text-center text-white">
+            {% if is_edit_survey %}
+            Edit Survey
+            {% else %}
+            Create New Survey
+            {% endif %}
+        </h1>
+    </div>
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -52,8 +54,8 @@
                     {% endfor %}
 
                     {% else %}
-                    <input type="hidden" name="choices-form-0-TOTAL_FORMS" value="1"
-                        id="id_choices-form-0-TOTAL_FORMS" value="Q0">
+                    <input type="hidden" name="choices-form-0-TOTAL_FORMS" value="1" id="id_choices-form-0-TOTAL_FORMS"
+                        value="Q0">
                     <input type="hidden" name="choices-form-0-INITIAL_FORMS" value="0"
                         id="id_choices-form-0-INITIAL_FORMS">
                     <input type="hidden" name="choices-form-0-MIN_NUM_FORMS" value="0"
@@ -64,16 +66,14 @@
                     <div class="mb-2 choice-forms">
                         <p>
                             <input type="text" name="choices-form-0-0-choices_text" class="form-control"
-                                placeholder="Enter choice text" maxlength="1000"
-                                id="id_choices-form-0-0-choices_text">
-                            <input type="hidden" name="choices-form-0-0-id"
-                                id="id_choices-form-0-0-id"><input type="hidden"
-                                name="choices-form-0-0-question" value=""
+                                placeholder="Enter choice text" maxlength="1000" id="id_choices-form-0-0-choices_text">
+                            <input type="hidden" name="choices-form-0-0-id" id="id_choices-form-0-0-id"><input
+                                type="hidden" name="choices-form-0-0-question" value=""
                                 id="id_choices-form-0-0-question">
                         </p>
                     </div>
                     {% endif %}
-                    
+
                     {% endwith %}
                 </div>
                 <button type="button" class="btn btn-success btn-sm add-choice">Add Choice</button>

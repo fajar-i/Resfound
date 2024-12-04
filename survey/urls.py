@@ -11,7 +11,8 @@ urlpatterns = [
     # URL dari aplikasi survei
     path('login/', login_view, name='login'),
     path('list_my_survey/', views.list_my_survey, name='list_my_survey'),
-    path('fyp/', views.list_my_survey, name='fyp'),
+    path('fyp/', views.list_survey_fyp, name='fyp'),
+    path('survey_responses/<int:survey_id>/', views.export_responses_to_csv, name='export_responses_to_csv'),
     path('create_survey/', views.create_survey, name='create_survey'),
     path('edit_survey/<int:survey_id>/', views.create_survey, name='edit_survey'),  # Ganti ke edit_survey jika perlu
     path('delete_survey/<int:survey_id>/', views.delete_survey, name='delete_survey'),

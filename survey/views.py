@@ -11,6 +11,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice
 from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView,PasswordResetForm
+import csv
 
 def prevent_logged_in_access(get_response):
     def middleware(request):
@@ -103,8 +104,38 @@ def home(request):
     return render(request, 'home.html')
 
 def list_my_survey(request):
-    list_semua = Survey.objects.all()
-    return render(request, 'my_survey.html', {'surveys': list_semua})
+    list_semua = Survey.objects.filter(user=request.user)
+    return render(request, 'my_survey.html', {'surveys': list_semua, 'user': request.user})
+
+def list_survey_fyp(request):
+    list_semua = Survey.objects.all().order_by('-total_price')
+    return render(request, 'my_survey.html', {'surveys': list_semua, 'user': request.user})
+
+def export_responses_to_csv(request, survey_id):
+    # Create the HttpResponse object with the appropriate CSV header
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="survey_responses.csv"'
+
+    # Initialize the CSV writer
+    writer = csv.writer(response)
+
+    # Fetch the survey and its related data
+    survey = get_object_or_404(Survey, id=survey_id)
+    questions = Question.objects.filter(survey=survey).order_by('id')  # Ensure consistent order
+    survey_responses = SurveyResponse.objects.filter(survey=survey)
+
+    # Write the top row: Questions
+    question_texts = [question.question_text for question in questions]
+    writer.writerow(question_texts)
+
+    # Write the responses: One row per respondent
+    for survey_response in survey_responses:
+        # Fetch all responses for the current survey response, ordered by question
+        responses = Response.objects.filter(survey_response=survey_response).order_by('question_id')
+        row = [response.answer for response in responses]
+        writer.writerow(row)
+
+    return response
 
 def delete_survey(request, survey_id):
     survey = get_object_or_404(Survey, id=survey_id)
