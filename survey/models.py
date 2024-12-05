@@ -46,6 +46,7 @@ class Question(models.Model):
 
 
 class ResponseChoice(models.Model):
+    id = models.AutoField(primary_key=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='choices')
     choices_text = models.TextField(max_length=1000)
 

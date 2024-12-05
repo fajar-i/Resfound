@@ -248,10 +248,10 @@ def create_survey(request, survey_id=None):
 
 def answer_survey(request, survey_id=None):
     survey = get_object_or_404(Survey, id=survey_id)
-    list_question = Question.objects.filter(survey=survey)
+    questions = Question.objects.filter(survey=survey)
 
     if request.method == 'POST':
-        form = FormToAnswerSurvey(list_question, request.POST)
+        form = FormToAnswerSurvey(questions, request.POST)
         if form.is_valid():
             survey_response = SurveyResponse.objects.create(
                 survey=survey,
@@ -259,27 +259,26 @@ def answer_survey(request, survey_id=None):
             )
             for key, value in form.cleaned_data.items():
                 question_id = key.split('_')[1]
-                question = Question.objects.get(id=question_id)
+                question = get_object_or_404(Question, id=question_id)
 
-                if isinstance(value, list):
-                    for choice_id in value:
-                        choice = ResponseChoice.objects.get(id=choice_id)
-                        Response.objects.create(
-                            user=request.user,
-                            survey_response=survey_response,
-                            question=question,
-                            answer=choice.choices_text
-                        )
-                else:
+                if isinstance(value, str) and not value.isdigit():  # Text response
                     Response.objects.create(
-                        user=request.user,
                         survey_response=survey_response,
                         question=question,
-                        answer=value
+                        answer=value,
+                        user=request.user
+                    )
+                else:  # Multiple-choice response
+                    choice = get_object_or_404(ResponseChoice, id=value)
+                    Response.objects.create(
+                        survey_response=survey_response,
+                        question=question,
+                        answer=choice.choices_text,
+                        user=request.user
                     )
             return redirect('home')
     else:
-        form = FormToAnswerSurvey(list_question)
+        form = FormToAnswerSurvey(questions)
 
     return render(request, 'answer_survey.html', {
         'survey': survey,
