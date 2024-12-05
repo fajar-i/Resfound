@@ -252,11 +252,19 @@ def answer_survey(request, survey_id=None):
 
     if request.method == 'POST':
         form = FormToAnswerSurvey(questions, request.POST)
+
         if form.is_valid():
-            survey_response = SurveyResponse.objects.create(
-                survey=survey,
-                status='submitted'
-            )
+
+            survey_response = SurveyResponse.objects.filter(survey=survey).first()    
+            if survey_response:
+                survey_response.status = 'submitted'
+                survey_response.save()
+            else :
+                survey_response = SurveyResponse.objects.create(
+                    survey=survey,
+                    status='submitted'
+                )
+
             for key, value in form.cleaned_data.items():
                 question_id = key.split('_')[1]
                 question = get_object_or_404(Question, id=question_id)
