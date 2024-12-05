@@ -254,13 +254,7 @@ def answer_survey(request, survey_id=None):
         form = FormToAnswerSurvey(questions, request.POST)
 
         if form.is_valid():
-
-            survey_response = SurveyResponse.objects.filter(survey=survey).first()    
-            if survey_response:
-                survey_response.status = 'submitted'
-                survey_response.save()
-            else :
-                survey_response = SurveyResponse.objects.create(
+            survey_response = SurveyResponse.objects.create(
                     survey=survey,
                     status='submitted'
                 )
