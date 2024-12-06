@@ -1,14 +1,14 @@
+from django.urls import reverse
+from django.http import HttpResponse
+from django.forms import modelformset_factory
+from django.db.models import Prefetch, Max
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from django.db.models import Prefetch, Max
-from django.urls import reverse
-from django.forms import modelformset_factory
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponse
-from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView,PasswordResetForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView, PasswordResetForm
 
 from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice
 from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey
@@ -22,7 +22,6 @@ def prevent_logged_in_access(get_response):
         response = get_response(request)
         return response
     return middleware
-
 
 # Akun Pengguna
 def login_view(request):

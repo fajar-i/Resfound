@@ -4,6 +4,6 @@ from django.shortcuts import redirect # Hanya perlu diimpor sekali
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', lambda request: redirect('register')),  # Mengarahkan root URL ke /login/
+    path('', lambda request: redirect('login')),  # Mengarahkan root URL ke /login/
     path('survey/', include('survey.urls')),  # Pastikan survey.urls sudah benar
 ]
