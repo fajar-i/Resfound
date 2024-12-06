@@ -7,10 +7,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.http import HttpResponse
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView,PasswordResetForm
 
 from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice
 from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey
-from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView,PasswordResetForm
+
 import csv
 
 def prevent_logged_in_access(get_response):
@@ -100,9 +102,6 @@ def reset_password_view(request):
 
 
 # Survey
-def home(request):
-    return render(request, 'home.html')
-
 def list_my_survey(request):
     list_semua = Survey.objects.filter(user=request.user)
     return render(request, 'my_survey.html', {'surveys': list_semua, 'user': request.user})
@@ -142,8 +141,8 @@ def export_responses_to_csv(request, survey_id):
             row.append(question_response.answer)
         else:
             writer.writerow(row)
-            row = []
-            i=0
+            row = [question_response.answer]
+            i=1
     writer.writerow(row)
 
     return response
@@ -167,22 +166,6 @@ def delete_question(request, question_id):
     else:
         return redirect('edit_survey', survey_id=question.survey.id)
 # survey/views.py
-from django.shortcuts import render, get_object_or_404
-from .models import Survey
-from django.http import HttpResponse
-
-def edit_survey(request, survey_id):
-    # Mengambil survey berdasarkan ID
-    survey = get_object_or_404(Survey, id=survey_id)
-    
-    if request.method == "POST":
-        # Logika untuk memproses pengeditan survey
-        survey.title = request.POST['title']
-        survey.description = request.POST['description']
-        survey.save()
-        return HttpResponse("Survey edited successfully")  # Arahkan ke halaman lain jika perlu
-    return render(request, 'edit_survey.html', {'survey': survey})
-
 
 def create_survey(request, survey_id=None):
     survey = get_object_or_404(Survey, pk=survey_id) if survey_id else None
@@ -248,7 +231,7 @@ def create_survey(request, survey_id=None):
         )
         choice_formsets[question.pk or f'form-{i}'] = ChoiceFormset
 
-    return render(request, 'insert_question.html', {
+    return render(request, 'create_survey.html', {
         'survey_form': survey_form,
         'question_formset': question_formset,
         'choice_formsets': choice_formsets,
