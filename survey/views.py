@@ -123,19 +123,28 @@ def export_responses_to_csv(request, survey_id):
 
     # Fetch the survey and its related data
     survey = get_object_or_404(Survey, id=survey_id)
-    questions = Question.objects.filter(survey=survey).order_by('id')  # Ensure consistent order
-    survey_responses = SurveyResponse.objects.filter(survey=survey)
+    questions = Question.objects.filter(survey=survey).order_by('id')
+    survey_response = get_object_or_404(SurveyResponse, survey=survey)
 
     # Write the top row: Questions
     question_texts = [question.question_text for question in questions]
     writer.writerow(question_texts)
 
     # Write the responses: One row per respondent
-    for survey_response in survey_responses:
-        # Fetch all responses for the current survey response, ordered by question
-        responses = Response.objects.filter(survey_response=survey_response).order_by('question_id')
-        row = [response.answer for response in responses]
-        writer.writerow(row)
+    row =[]
+    # Fetch all responses for the current survey response, ordered by question
+    responses = Response.objects.filter(survey_response=survey_response).order_by('user')
+    print(len(questions))
+    i=0
+    for question_response in responses:
+        if i != len(questions):
+            i+=1
+            row.append(question_response.answer)
+        else:
+            writer.writerow(row)
+            row = []
+            i=0
+    writer.writerow(row)
 
     return response
 
@@ -254,7 +263,13 @@ def answer_survey(request, survey_id=None):
         form = FormToAnswerSurvey(questions, request.POST)
 
         if form.is_valid():
-            survey_response = SurveyResponse.objects.create(
+
+            survey_response = SurveyResponse.objects.filter(survey=survey).first()    
+            if survey_response:
+                survey_response.status = 'submitted'
+                survey_response.save()
+            else :
+                survey_response = SurveyResponse.objects.create(
                     survey=survey,
                     status='submitted'
                 )
