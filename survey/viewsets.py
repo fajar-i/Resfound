@@ -8,3 +8,4 @@ class SurveyViewSets(viewsets.ModelViewSet):
     queryset = Survey.objects.all()
     serializer_class = SurveySerializer
     permission_classes = [AllowAny]
+
