@@ -49,15 +49,6 @@ def login_view(request):
         
     return render(request, 'login.html', {'form': form})
 
-@login_required
-def logout_view(request):
-    logout(request)
-    return redirect('login')
-
-@login_required
-def home_view(request):
-    return render(request, 'home.html')
-
 def register_view(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -99,6 +90,15 @@ def reset_password_view(request):
         form = PasswordResetForm()
     
     return render(request, "reset_password.html", {"form": form})
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+@login_required
+def home_view(request):
+    return render(request, 'home.html')
 
 @login_required
 def list_my_survey(request):
