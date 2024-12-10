@@ -46,15 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
     'survey',
-    'corsheaders',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'resfound.middleware.DisableCacheMiddleware',  # Tambahkan middleware Anda di sini
-
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -62,9 +58,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'resfound.middleware.DisableCacheMiddleware',  # Tambahkan middleware Anda di sini
+    
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+
 
 ROOT_URLCONF = 'resfound.urls'
 
@@ -96,7 +94,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'resfound',
         'USER' : 'root',
-        'PASSWORD' : 'dawn',
+        'PASSWORD' : 'password',
         'HOST' : 'localhost',
         'port' : '3306'
     }
