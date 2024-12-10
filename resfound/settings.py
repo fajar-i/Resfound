@@ -151,4 +151,3 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'abyanlaksono@upi.edu'  # Ganti dengan email Anda
 EMAIL_HOST_PASSWORD = 'oiws nksf rgav iwfe'  # Ganti dengan password email Anda
-
