@@ -53,8 +53,10 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    'resfound.middleware.DisableCacheMiddleware',  # Tambahkan middleware Anda di sini
+    'resfound.middleware.DisableCacheMiddleware',  
 
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -65,6 +67,14 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Default engine
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Optional: Log out when the browser closes
 
 ROOT_URLCONF = 'resfound.urls'
 
@@ -132,8 +142,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-LOGIN_URL = '/survey/login/'  # Ganti dengan path yang diinginkan
-LOGIN_REDIRECT_URL = 'login'      # Redirect setelah berhasil login
+LOGIN_URL = '/login/'  # Ganti dengan path yang diinginkan
+LOGIN_REDIRECT_URL = '/'      # Redirect setelah berhasil login
 LOGOUT_REDIRECT_URL = '/'     # Redirect setelah logout
 
 

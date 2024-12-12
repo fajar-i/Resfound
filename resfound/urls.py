@@ -9,7 +9,7 @@ router.register(r'survey', SurveyViewSets, basename='survey')  # Register the vi
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', lambda request: redirect('login')),  # Mengarahkan root URL ke /login/
-    path('survey/', include('survey.urls')),  # Pastikan survey.urls sudah benar
+    # path('login/', lambda request: redirect('login')),  # Mengarahkan root URL ke /login/
+    path('', include('survey.urls')),  # Pastikan survey.urls sudah benar
     path('api/', include((router.urls, 'core_api'), namespace='core_api')),
 ]

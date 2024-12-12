@@ -49,14 +49,6 @@ def login_view(request):
         
     return render(request, 'login.html', {'form': form})
 
-def logout_view(request):
-    logout(request)
-    return redirect('login')
-
-@login_required
-def home_view(request):
-    return render(request, 'home.html')
-
 def register_view(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -99,8 +91,16 @@ def reset_password_view(request):
     
     return render(request, "reset_password.html", {"form": form})
 
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('login')
 
-# Survey
+@login_required
+def home_view(request):
+    return render(request, 'home.html')
+
+@login_required
 def list_my_survey(request):
     list_semua = Survey.objects.filter(user=request.user)
     return render(request, 'my_survey.html', {'surveys': list_semua, 'user': request.user})
@@ -111,6 +111,7 @@ def list_survey_fyp(request):
     list_fyp = list_semua.exclude(id__in=list_my.values_list('id', flat=True))
     return render(request, 'my_survey.html', {'surveys': list_fyp, 'user': request.user})
 
+@login_required
 def export_responses_to_csv(request, survey_id):
     # Create the HttpResponse object with the appropriate CSV header
     response = HttpResponse(content_type='text/csv')
@@ -146,6 +147,7 @@ def export_responses_to_csv(request, survey_id):
 
     return response
 
+@login_required
 def delete_survey(request, survey_id):
     survey = get_object_or_404(Survey, id=survey_id)
     if request.method == 'POST':
@@ -156,6 +158,7 @@ def delete_survey(request, survey_id):
         messages.error(request, "Invalid request. Surveys can only be deleted through POST requests")
     return redirect('list_my_survey')
 
+@login_required
 def delete_question(request, question_id):
     question = get_object_or_404(Question, id=question_id)
     if request.method == 'POST' or 'GET':
@@ -164,8 +167,8 @@ def delete_question(request, question_id):
         return redirect('edit_survey', survey_id=survey.id)
     else:
         return redirect('edit_survey', survey_id=question.survey.id)
-# survey/views.py
 
+@login_required
 def create_survey(request, survey_id=None):
     survey = get_object_or_404(Survey, pk=survey_id) if survey_id else None
     is_edit_survey = survey is not None

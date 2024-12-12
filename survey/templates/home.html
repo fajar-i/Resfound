@@ -110,9 +110,10 @@
         <p>You're logged in.</p>
 
         <a href="{% url 'create_survey' %}" class="btn btn-primary">Create New Survey</a>
-        <a href="{% url 'list_my_survey' %}" class="btn btn-info">List My Surveys</a>
+        <a href="{% url 'fyp' %}" class="btn btn-primary">Surveys for you</a>
+        <a href="{% url 'list_my_survey' %}" class="btn btn-primary">List My Surveys</a>
 
-        <form method="post" action="{% url 'login' %}" style="margin-top: 20px;">
+        <form method="post" action="{% url 'logout' %}" style="margin-top: 20px;">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Logout</button>
         </form>
