@@ -1,5 +1,5 @@
 from django.urls import reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.forms import modelformset_factory
 from django.db.models import Prefetch, Max
 from django.shortcuts import render, get_object_or_404, redirect
@@ -283,3 +283,24 @@ def answer_survey(request, survey_id=None):
         'survey': survey,
         'form': form,
     })
+
+def survey_responses(request, survey_id):
+    try:
+        survey = Survey.objects.get(pk=survey_id)
+        responses = Response.objects.filter(survey=survey)
+        response_data = [
+            {
+                "respondent_id": response.id,
+                "answers": [
+                    {
+                        "question_text": answer.question.text,
+                        "answer": answer.text
+                    }
+                    for answer in response.answers.all()
+                ]
+            }
+            for response in responses
+        ]
+        return JsonResponse({"survey": {"title": survey.title, "description": survey.description}, "responses": response_data})
+    except Survey.DoesNotExist:
+        return JsonResponse({"error": "Survey not found"}, status=404)

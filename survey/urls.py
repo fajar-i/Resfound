@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from . import views
 from .views import login_view, home_view, register_view, logout_view
+from .viewsets import SurveyResponsesAPIView
 from django.contrib.auth import views as auth_views  # Untuk menggunakan views dari django auth
 
 urlpatterns = [
@@ -18,6 +19,9 @@ urlpatterns = [
     path('delete_survey/<int:survey_id>/', views.delete_survey, name='delete_survey'),
     path('delete_question/<int:question_id>/', views.delete_question, name='delete_question'),
     path('answer_survey/<int:survey_id>/', views.answer_survey, name='answer_survey'),
+
+    path('api/survey/<int:survey_id>/responses/', views.survey_responses, name='survey_responses'),
+    # path('survey/<int:survey_id>/responses', RedirectView.as_view(url='/api/survey_responses/%(survey_id)s/', permanent=False)),
 
     path('home/', home_view, name='home'),
     path('register/', register_view, name='register'),
