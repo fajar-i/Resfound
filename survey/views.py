@@ -109,7 +109,7 @@ def list_survey_fyp(request):
     list_semua = Survey.objects.all().order_by('-total_price')
     list_my = Survey.objects.filter(user=request.user)
     list_fyp = list_semua.exclude(id__in=list_my.values_list('id', flat=True))
-    return render(request, 'my_survey.html', {'surveys': list_fyp, 'user': request.user})
+    return render(request, 'fyp.html', {'surveys': list_fyp, 'user': request.user})
 
 def export_responses_to_csv(request, survey_id):
     # Create the HttpResponse object with the appropriate CSV header
