@@ -106,7 +106,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'resfound',
         'USER' : 'root',
-        'PASSWORD' : 'dawn',
+        'PASSWORD' : 'password',
         'HOST' : 'localhost',
         'port' : '3306'
     }
