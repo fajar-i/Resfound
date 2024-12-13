@@ -18,12 +18,11 @@ import csv
 def prevent_logged_in_access(get_response):
     def middleware(request):
         if request.path == '/login/' and request.user.is_authenticated:
-            return redirect('home')  # Arahkan pengguna ke home jika sudah login
+            return redirect('home')
         response = get_response(request)
         return response
     return middleware
 
-# Akun Pengguna
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -31,15 +30,12 @@ def login_view(request):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(request, username=username, password=password)
-            
             if user is not None:
                 login(request, user)
-                
-                # Cek apakah user admin atau bukan
-                if user.is_staff:  # Jika admin
-                    return redirect('/admin/')  # Redirect ke halaman admin
-                else:  # Jika user biasa
-                    return redirect('home')  # Redirect ke halaman home untuk user
+                if user.is_staff:
+                    return redirect('/admin/')
+                else:
+                    return redirect('home')
             else:
                 messages.error(request, "Username atau password salah.")
         else:
