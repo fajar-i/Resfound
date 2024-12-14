@@ -259,7 +259,8 @@ def answer_survey(request, survey_id=None):
                 question_id = key.split('_')[1]
                 question = get_object_or_404(Question, id=question_id)
 
-                if isinstance(value, str) and not value.isdigit():  # Text response
+                choice = ResponseChoice.objects.filter(question=question_id)
+                if not choice:
                     Response.objects.create(
                         survey_response=survey_response,
                         question=question,
@@ -267,7 +268,6 @@ def answer_survey(request, survey_id=None):
                         user=request.user
                     )
                 else:  # Multiple-choice response
-                    choice = get_object_or_404(ResponseChoice, id=value)
                     Response.objects.create(
                         survey_response=survey_response,
                         question=question,

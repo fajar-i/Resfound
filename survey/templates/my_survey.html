@@ -36,7 +36,7 @@
                         <p class="card-text">Created on: {{ survey.creation_date }}</p>
 
                         {% if user == survey.user %}
-                        <a href="http://localhost:3000/" class="btn btn-secondary">
+                        <a href="{% url 'export_responses_to_csv' survey.id %}" class="btn btn-secondary">
                             View Responses
                         </a>
                         <a href="{% url 'edit_survey' survey.id %}" class="btn btn-primary">
