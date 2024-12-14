@@ -27,7 +27,7 @@ class FormToCreateQuestion(forms.ModelForm):
             'question_text': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'question_type': forms.Select(attrs={'class': 'form-control'}),
             'question_order': forms.NumberInput(attrs={'class': 'form-control'}),
-            'img': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'img': forms.ClearableFileInput(attrs={'class': 'form-control', 'clear_checkbox_label ': None}),
         }
 
     def __init__(self, *args, **kwargs):
