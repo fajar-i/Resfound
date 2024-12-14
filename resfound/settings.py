@@ -47,9 +47,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'survey',
+    'corsheaders',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'resfound.middleware.DisableCacheMiddleware',  
+
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,11 +64,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'resfound.middleware.DisableCacheMiddleware',  # Tambahkan middleware Anda di sini
-    
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Default engine
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Optional: Log out when the browser closes
 
 ROOT_URLCONF = 'resfound.urls'
 
@@ -129,8 +142,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-LOGIN_URL = '/survey/login/'  # Ganti dengan path yang diinginkan
-LOGIN_REDIRECT_URL = 'login'      # Redirect setelah berhasil login
+LOGIN_URL = '/login/'  # Ganti dengan path yang diinginkan
+LOGIN_REDIRECT_URL = '/'      # Redirect setelah berhasil login
 LOGOUT_REDIRECT_URL = '/'     # Redirect setelah logout
 
 
@@ -143,6 +156,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+}
 
 # Pengaturan email di Django (gunakan Gmail sebagai contoh)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

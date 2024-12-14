@@ -1,5 +1,5 @@
 from django.urls import reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.forms import modelformset_factory
 from django.db.models import Prefetch, Max
 from django.shortcuts import render, get_object_or_404, redirect
@@ -18,12 +18,11 @@ import csv
 def prevent_logged_in_access(get_response):
     def middleware(request):
         if request.path == '/login/' and request.user.is_authenticated:
-            return redirect('home')  # Arahkan pengguna ke home jika sudah login
+            return redirect('home')
         response = get_response(request)
         return response
     return middleware
 
-# Akun Pengguna
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -31,15 +30,12 @@ def login_view(request):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(request, username=username, password=password)
-            
             if user is not None:
                 login(request, user)
-                
-                # Cek apakah user admin atau bukan
-                if user.is_staff:  # Jika admin
-                    return redirect('/admin/')  # Redirect ke halaman admin
-                else:  # Jika user biasa
-                    return redirect('home')  # Redirect ke halaman home untuk user
+                if user.is_staff:
+                    return redirect('/admin/')
+                else:
+                    return redirect('home')
             else:
                 messages.error(request, "Username atau password salah.")
         else:
@@ -48,14 +44,6 @@ def login_view(request):
         form = AuthenticationForm()
         
     return render(request, 'login.html', {'form': form})
-
-def logout_view(request):
-    logout(request)
-    return redirect('login')
-
-@login_required
-def home_view(request):
-    return render(request, 'home.html')
 
 def register_view(request):
     if request.method == 'POST':
@@ -99,8 +87,16 @@ def reset_password_view(request):
     
     return render(request, "reset_password.html", {"form": form})
 
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('login')
 
-# Survey
+@login_required
+def home_view(request):
+    return render(request, 'home.html')
+
+@login_required
 def list_my_survey(request):
     list_semua = Survey.objects.filter(user=request.user)
     return render(request, 'my_survey.html', {'surveys': list_semua, 'user': request.user})
@@ -111,6 +107,7 @@ def list_survey_fyp(request):
     list_fyp = list_semua.exclude(id__in=list_my.values_list('id', flat=True))
     return render(request, 'fyp.html', {'surveys': list_fyp, 'user': request.user})
 
+@login_required
 def export_responses_to_csv(request, survey_id):
     # Create the HttpResponse object with the appropriate CSV header
     response = HttpResponse(content_type='text/csv')
@@ -146,6 +143,7 @@ def export_responses_to_csv(request, survey_id):
 
     return response
 
+@login_required
 def delete_survey(request, survey_id):
     survey = get_object_or_404(Survey, id=survey_id)
     if request.method == 'POST':
@@ -156,6 +154,7 @@ def delete_survey(request, survey_id):
         messages.error(request, "Invalid request. Surveys can only be deleted through POST requests")
     return redirect('list_my_survey')
 
+@login_required
 def delete_question(request, question_id):
     question = get_object_or_404(Question, id=question_id)
     if request.method == 'POST' or 'GET':
@@ -164,8 +163,8 @@ def delete_question(request, question_id):
         return redirect('edit_survey', survey_id=survey.id)
     else:
         return redirect('edit_survey', survey_id=question.survey.id)
-# survey/views.py
 
+@login_required
 def create_survey(request, survey_id=None):
     survey = get_object_or_404(Survey, pk=survey_id) if survey_id else None
     is_edit_survey = survey is not None
@@ -283,3 +282,24 @@ def answer_survey(request, survey_id=None):
         'survey': survey,
         'form': form,
     })
+
+def survey_responses(request, survey_id):
+    try:
+        survey = Survey.objects.get(pk=survey_id)
+        responses = Response.objects.filter(survey=survey)
+        response_data = [
+            {
+                "respondent_id": response.id,
+                "answers": [
+                    {
+                        "question_text": answer.question.text,
+                        "answer": answer.text
+                    }
+                    for answer in response.answers.all()
+                ]
+            }
+            for response in responses
+        ]
+        return JsonResponse({"survey": {"title": survey.title, "description": survey.description}, "responses": response_data})
+    except Survey.DoesNotExist:
+        return JsonResponse({"error": "Survey not found"}, status=404)
