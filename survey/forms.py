@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms import modelformset_factory, inlineformset_factory
 from .models import Survey, Question, QuestionType, ResponseChoice, SurveyResponse, Response
-
+from django.utils.safestring import mark_safe
 # Login Form
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
@@ -63,7 +63,14 @@ class FormToAnswerSurvey(forms.Form):
     def __init__(self, questions, *args, **kwargs):
         super(FormToAnswerSurvey, self).__init__(*args, **kwargs)
         for question in questions:
+            
             question_label = f"{question.question_order}. {question.question_text}"
+            if(question.img):
+                img_html = f'<br><img src="{question.img.url}" alt="Question Image" style="max-width:300px; max-height:300px;">'
+                question_label += img_html
+
+            question_label = mark_safe(question_label)
+
             choices = ResponseChoice.objects.filter(question=question)
             if choices.exists():
                 self.fields[f"question_{question.id}"] = forms.ChoiceField(
