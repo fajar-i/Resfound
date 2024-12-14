@@ -20,8 +20,7 @@ urlpatterns = [
     path('delete_question/<int:question_id>/', views.delete_question, name='delete_question'),
     path('answer_survey/<int:survey_id>/', views.answer_survey, name='answer_survey'),
 
-    path('api/survey/<int:survey_id>/responses/', views.survey_responses, name='survey_responses'),
-    # path('survey/<int:survey_id>/responses', RedirectView.as_view(url='/api/survey_responses/%(survey_id)s/', permanent=False)),
+    path('survey/<int:survey_id>/responses/', views.survey_responses, name='survey_responses'),
 
     path('home/', home_view, name='home'),
     path('register/', register_view, name='register'),
