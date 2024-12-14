@@ -64,11 +64,12 @@ class FormToAnswerSurvey(forms.Form):
         super(FormToAnswerSurvey, self).__init__(*args, **kwargs)
         for question in questions:
             
-            question_label = f"{question.question_order}. {question.question_text}"
+            question_label = f''
             if(question.img):
-                img_html = f'<br><img src="{question.img.url}" alt="Question Image" style="max-width:300px; max-height:300px;">'
-                question_label += img_html
+                img_html = f'<br><img src="{question.img.url}" alt="Question Image" style="max-width:300px; max-height:300px;"><br>'
+                question_label = img_html
 
+            question_label += f"{question.question_order}. {question.question_text}"
             question_label = mark_safe(question_label)
 
             choices = ResponseChoice.objects.filter(question=question)
