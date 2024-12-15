@@ -1,10 +1,16 @@
 from rest_framework import serializers
-from .models import Survey, SurveyResponse, Response, ResponseChoice, Question
+from .models import Survey, SurveyResponse, Response, ResponseChoice, Question, RecommendedSurvey
 
 class SurveySerializer(serializers.ModelSerializer):
     class Meta:
         model = Survey
-        fields = ['id', 'title', 'description', 'user']
+        fields = '__all__'
+
+class PublishSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecommendedSurvey
+        fields = '__all__'
+        
 
 class ResponseChoiceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,6 +30,7 @@ class SurveyResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = SurveyResponse
         fields = ['id', 'status', 'last_updated', 'responses']
+
 class QuestionSerializer(serializers.ModelSerializer):
     question_type = serializers.StringRelatedField()  # Returns the name of the QuestionType
     choices = ResponseChoiceSerializer(many=True, read_only=True)

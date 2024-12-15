@@ -35,7 +35,6 @@ class QuestionType(models.Model):
     def __str__(self):
         return self.name
 
-
 class Question(models.Model):
     id = models.AutoField(primary_key=True)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name='questions')
@@ -53,8 +52,6 @@ class Question(models.Model):
     def __str__(self):
         return self.question_text
 
-
-
 class ResponseChoice(models.Model):
     id = models.AutoField(primary_key=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='choices')
@@ -62,7 +59,6 @@ class ResponseChoice(models.Model):
 
     def __str__(self):
         return self.choices_text
-
 
 class SurveyResponse(models.Model):
     STATUS_CHOICES = [
@@ -78,8 +74,6 @@ class SurveyResponse(models.Model):
     def __str__(self):
         return f"Response to Survey {self.survey}"
 
-
-
 class Response(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='responses')
     survey_response = models.ForeignKey(SurveyResponse, on_delete=models.CASCADE, related_name='responses')
@@ -89,12 +83,10 @@ class Response(models.Model):
     def __str__(self):
         return f"Response by {self.user} to {self.question}"
 
-
 class RecommendedSurvey(models.Model):
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name='recommended_surveys')
     token_debit = models.PositiveIntegerField()
     limit = models.PositiveIntegerField()
-
 
     def __str__(self):
         return f"Recommendation for Survey {self.survey}"

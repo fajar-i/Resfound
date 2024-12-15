@@ -1,18 +1,23 @@
 from django.shortcuts import get_object_or_404
-
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-
-from .models import Survey, SurveyResponse, Response as ResponseModel
-from .serializers import SurveySerializer, SurveyResponseSerializer, ResponseSerializer
+from .models import Survey, SurveyResponse, RecommendedSurvey, Response as ResponseModel
+from .serializers import SurveySerializer, PublishSerializer, SurveyResponseSerializer, ResponseSerializer
 
 class SurveyViewSets(viewsets.ModelViewSet):
     queryset = Survey.objects.all()
     serializer_class = SurveySerializer
     permission_classes = [AllowAny]
+
+class PublishViewSets(viewsets.ModelViewSet):
+    queryset = RecommendedSurvey.objects.all()
+    serializer_class = PublishSerializer
+    permission_classes = [AllowAny]
+
+
 
 class SurveyResponsesAPIView(APIView):
     def get(self, request, survey_id):
