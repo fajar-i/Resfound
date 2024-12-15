@@ -1,8 +1,11 @@
 from django import forms
+from .models import UserProfile
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms import modelformset_factory, inlineformset_factory
 from .models import Survey, Question, QuestionType, ResponseChoice, SurveyResponse, Response
 
+
+from .models import UserSettings
 # Login Form
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
@@ -78,3 +81,12 @@ class FormToAnswerSurvey(forms.Form):
                     widget=forms.TextInput(attrs={'class': 'form-control'}),
                     required=True
                 )
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['picture', 'bio']
+
+class UserSettingsForm(forms.ModelForm):
+    class Meta:
+        model = UserSettings  # Use your model here
+        fields = ['setting_1', 'setting_2']

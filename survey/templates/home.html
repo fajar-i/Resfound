@@ -81,6 +81,16 @@
             transform: scale(1.05);
         }
 
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e68a00;
+            transform: scale(1.05);
+        }
+
         .btn-danger {
             background-color: #f44336;
             color: white;
@@ -96,11 +106,11 @@
             .container {
                 padding: 25px;
             }
+
             h1 {
                 font-size: 1.5rem;
             }
         }
-
     </style>
 </head>
 
@@ -109,15 +119,18 @@
         <h1>Welcome, {{ user.username }}!</h1>
         <p>You're logged in.</p>
 
+        <!-- Navigation Buttons -->
         <a href="{% url 'create_survey' %}" class="btn btn-primary">Create New Survey</a>
         <a href="{% url 'list_my_survey' %}" class="btn btn-info">List My Surveys</a>
+        <a href="{% url 'profile' %}" class="btn btn-warning">View Profile</a>
 
+        <!-- Logout Form -->
         <form method="post" action="{% url 'login' %}" style="margin-top: 20px;">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Logout</button>
         </form>
     </div>
-    
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-mQ93GVzO9Kj2U+FJb0cSNFspIRyfuG0Fk4uOzZLlqK1SW2JlBwYjK7bhEsWbi0Yx" crossorigin="anonymous">
