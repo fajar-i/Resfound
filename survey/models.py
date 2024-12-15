@@ -1,18 +1,41 @@
 from django.db import models
 from django.utils.timezone import now
 from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
+
+
+def update_profile(request):
+    user = request.user
+    profile = get_object_or_404(UserProfile, user=user)
+
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # Setelah berhasil update, redirect ke halaman profil
+    else:
+        form = ProfileUpdateForm(instance=profile)
+
+    return render(request, 'update_profile.html', {'form': form})
 
 class UserProfile(models.Model):
-    id = id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pemilik_profile')
-    respoint = models.IntegerField()
-    picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)  # Ensure this line is present
-    phone = models.CharField(max_length=15, blank=True, null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    respoint = models.IntegerField(default=0)
+    picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    phone = models.CharField(
+        max_length=15,
+        blank=True,
+        null=True,
+        validators=[RegexValidator(
+            regex=r'^\+?1?\d{9,15}$',
+            message='Enter a valid phone number. Format: +123456789 or 123456789.'
+        )]
+    )
     bio = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.user.username
-
+        
 class Survey(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pemilik_survey')

@@ -102,3 +102,16 @@ class FormToPublishSurvey(forms.ModelForm):
             'closing_time': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
             'status': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+class ProfileUpdateForm(forms.ModelForm):
+    # Include full name in the form
+    full_name = forms.CharField(max_length=100, required=False, label="Full Name")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.user:  # If user instance exists, populate the full_name field
+            self.fields['full_name'].initial = self.instance.user.get_full_name()
+    class Meta:
+        model = UserProfile
+        fields = ['phone', 'bio', 'picture']  # Existing fields of UserProfile
+

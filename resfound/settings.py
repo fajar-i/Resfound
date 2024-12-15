@@ -1,6 +1,9 @@
 from pathlib import Path
 import os
 import environ
+import pymysql
+
+pymysql.install_as_MySQLdb()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
@@ -11,11 +14,14 @@ MEDIA_URL = '/media/'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'resfound',
+        'NAME': 'depilkom',
         'USER' : 'root',
-        'PASSWORD' : 'dawn',
+        'PASSWORD' : '',
         'HOST' : 'localhost',
-        'port' : '3306'
+        'port' : '3306',
+        'OPTIONS': {
+            'sql_mode': 'STRICT_TRANS_TABLES',
+        },
     }
 }
 # Quick-start development settings - unsuitable for production
@@ -53,7 +59,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'resfound.middleware.DisableCacheMiddleware',  
+    'resfound.middleware.DisableCacheMiddleware', 
+
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -126,7 +134,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-LOGIN_URL = '/login/'  # Ganti dengan path yang diinginkan
+LOGIN_URL = '/login.html/'  # Ganti dengan path yang diinginkan
 LOGIN_REDIRECT_URL = '/'      # Redirect setelah berhasil login
 LOGOUT_REDIRECT_URL = '/'     # Redirect setelah logout
 
@@ -153,3 +161,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'abyanlaksono@upi.edu'  # Ganti dengan email Anda
 EMAIL_HOST_PASSWORD = 'oiws nksf rgav iwfe'  # Ganti dengan password email Anda
+
+

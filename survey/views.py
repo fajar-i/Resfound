@@ -11,8 +11,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView, PasswordResetForm
 
 from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice, UserProfile 
-from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey, FormToPublishSurvey, UserProfileForm
 
+from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey, FormToPublishSurvey, UserProfileForm,ProfileUpdateForm
 import csv
 
 def prevent_logged_in_access(get_response):
@@ -303,23 +303,25 @@ def profile_view(request):
 
 def update_profile(request):
     user = request.user
-    try:
-        profile = UserProfile.objects.get(user=user)
-    except UserProfile.DoesNotExist:
-        profile = None  # Handle case if profile doesn't exist
+    profile = get_object_or_404(UserProfile, user=user)
 
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
-            form.save()
-            return redirect('profile')  # Redirect to profile page after update
-    else:
-        form = UserProfileForm(instance=profile)
+            # Update the user's full name if it is provided
+            full_name = request.POST.get('full_name', '')
+            if full_name:
+                user.first_name, user.last_name = full_name.split(' ', 1) if ' ' in full_name else (full_name, '')
+                user.save()
 
-    context = {
-        'form': form,
-    }
-    return render(request, 'update_profile.html', context)
+            form.save()  # Save the profile form data
+            return redirect('profile')  # Redirect to profile page after successful update
+    else:
+        form = ProfileUpdateForm(instance=profile)
+
+    # Pass the 'profile' object to the context
+    return render(request, 'update_profile.html', {'form': form, 'profile': profile})
+
 
 @login_required
 def change_password_view(request):
