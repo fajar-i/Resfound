@@ -1,16 +1,27 @@
 from django.db import models
-from django.contrib.auth.models import User
+
 from django.utils.timezone import now
+
+from django.contrib.auth.models import User
+# coba dibuat manual
+class Profile(models.Model):
+    id = id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pemilik_profile')
+    respoint = models.IntegerField
+
+    def __str__(self):
+        return self.user.username
 
 class Survey(models.Model):
     id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='surveys')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pemilik_survey')
     title = models.CharField(max_length=255)
     description = models.TextField(max_length=255, null=True, blank=True)
     creation_date = models.DateTimeField(auto_now_add=True)
     opening_time = models.DateTimeField(default=now, null=True, blank=True)
     closing_time = models.DateTimeField(null=True, blank=True)
     total_price = models.IntegerField(default=0)
+    respoint_by_user = models.IntegerField(default=0)
     status = models.BooleanField(default=False)
 
     def __str__(self):

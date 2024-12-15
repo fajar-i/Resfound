@@ -13,7 +13,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'resfound',
         'USER' : 'root',
-        'PASSWORD' : 'zebrakecetit1604',
+        'PASSWORD' : 'password',
         'HOST' : 'localhost',
         'port' : '3306'
     }
