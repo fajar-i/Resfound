@@ -1,0 +1,88 @@
+/* Global Styles for Dark Mode */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #181818;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  color: #fff;
+}
+
+/* Main Container */
+.container {
+  background-color: rgba(30, 30, 30, 0.9);
+  backdrop-filter: blur(12px); /* Soft glass effect */
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  color: #fff;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+p {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  color: #b0b0b0;
+}
+
+.btn {
+  width: 100%;
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  border: none;
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease;
+}
+
+/* Button Styles */
+.btn-primary {
+  background-color: #0095f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0078d4;
+  transform: scale(1.05);
+}
+
+.btn-info {
+  background-color: #25d366;
+  color: white;
+}
+
+.btn-info:hover {
+  background-color: #128c7e;
+  transform: scale(1.05);
+}
+
+.btn-danger {
+  background-color: #f44336;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #d32f2f;
+  transform: scale(1.05);
+}
+
+/* Small mobile adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 25px;
+  }
+  h1 {
+    font-size: 1.5rem;
+  }
+}

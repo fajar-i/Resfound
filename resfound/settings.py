@@ -52,8 +52,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+<<<<<<< HEAD
+    'resfound.middleware.DisableCacheMiddleware',  # Tambahkan middleware Anda di sini
+=======
     'corsheaders.middleware.CorsMiddleware',
     'resfound.middleware.DisableCacheMiddleware',  
+>>>>>>> 2dc851e2ab8d71413730905335491d08b0c55d6c
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -94,18 +98,18 @@ WSGI_APPLICATION = 'resfound.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    # },
 ]
 
 
@@ -125,8 +129,6 @@ LOGIN_REDIRECT_URL = '/'      # Redirect setelah berhasil login
 LOGOUT_REDIRECT_URL = '/'     # Redirect setelah logout
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
 
@@ -148,4 +150,3 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'abyanlaksono@upi.edu'  # Ganti dengan email Anda
 EMAIL_HOST_PASSWORD = 'oiws nksf rgav iwfe'  # Ganti dengan password email Anda
-

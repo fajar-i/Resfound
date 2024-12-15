@@ -1,6 +1,9 @@
 from django.db import models
 
 from django.utils.timezone import now
+from django import forms  # Import the forms module
+from django.db import models
+from django.contrib.auth.models import User
 
 from django.contrib.auth.models import User
 # coba dibuat manual
@@ -98,3 +101,27 @@ class RecommendedSurvey(models.Model):
 
     def __str__(self):
         return f"Recommendation for Survey {self.survey}"
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)  # Ensure this line is present
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
+
+class UserProfileForm(forms.ModelForm):  # Define the form here
+    class Meta:
+        model = UserProfile
+        fields = ['picture', 'phone', 'bio']
+
+class UserSettings(models.Model):
+    user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
+    setting_1 = models.CharField(max_length=100)
+    setting_2 = models.BooleanField(default=False)
+    # Add any other fields you want for the settings
+
+    def __str__(self):
+        return f"Settings for {self.user.username}"
