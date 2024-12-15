@@ -87,7 +87,7 @@ class FormToAnswerSurvey(forms.Form):
                     required=True
                 )
 
-class FormToPublishSurvey():
+class FormToPublishSurvey(forms.Form):
     class Meta:
         model = Survey
         fields = ['opening_time', 'closing_time', 'respoint', 'status']

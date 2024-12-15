@@ -304,6 +304,7 @@ def survey_responses(request, survey_id):
     except Survey.DoesNotExist:
         return JsonResponse({"error": "Survey not found"}, status=404)
 
+@login_required
 def publish_survey(request, survey_id):
     survey = get_object_or_404(Survey, id=survey_id)
     user = survey.user
@@ -312,7 +313,8 @@ def publish_survey(request, survey_id):
     if request.method == 'POST':
         form = FormToPublishSurvey(request.POST, instance=survey, user=request.user)
         if form.is_valid():
-            form.save()
+            survey = form.save(commit=False)
+            survey.save()
             # return redirect('some_success_page')
     else:
         form = FormToPublishSurvey(instance=survey, user=request.user)
