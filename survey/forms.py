@@ -86,3 +86,68 @@ class FormToAnswerSurvey(forms.Form):
                     widget=forms.TextInput(attrs={'class': 'form-control'}),
                     required=True
                 )
+
+class FormToPublishSurvey():
+    class Meta:
+        model = Survey
+        fields = ['opening_time', 'closing_time', 'respoint', 'status']
+        widgets = {
+            'opening_time': forms.DateTimeInput(
+                attrs={
+                    'type': 'datetime-local',
+                    'class': 'form-control',
+                    'placeholder': 'Select opening time'
+                }
+            ),
+            'closing_time': forms.DateTimeInput(
+                attrs={
+                    'type': 'datetime-local',
+                    'class': 'form-control',
+                    'placeholder': 'Select closing time'
+                }
+            ),
+            'respoint': forms.NumberInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Apply as many respoint'
+                }
+            ),
+            'status': forms.CheckboxInput(
+                attrs={
+                    'class': 'form-check-input',
+                }
+            ),
+        }
+
+        def respoint_rule(self):
+            respoint = self.cleaned_data.get('respoint_by_user')
+
+            if not self.survey_instance or not self.user:
+                raise forms.ValidationError("Invalid survey or user context for validation.")
+
+            survey_price = self.survey_instance.total_price
+            user_profile = getattr(self.user, 'profile', None)
+
+            if not user_profile:
+                raise forms.ValidationError("User does not have a profile.")
+
+            user_max_respoint = user_profile.respoint
+
+            if respoint is not None:
+                if respoint <= 0:
+                    raise forms.ValidationError("Respoint can't be 0")
+                
+                if respoint > user_max_respoint:
+                    raise forms.ValidationError("Insufficient Respoint")
+                
+                if total_price % survey_price != 0:
+                    raise forms.ValidationError("Respoint must be a multiple of this survey price")
+        
+            return respoint
+        
+
+    def __init__(self, *args, **kwargs):
+        # Get the user and survey instance from the form initialization
+        self.user = kwargs.pop('user', None)
+        self.survey_instance = kwargs.pop('instance', None)
+        super(FormToPublishSurvey, self).__init__(*args, **kwargs)

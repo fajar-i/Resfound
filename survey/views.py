@@ -10,8 +10,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView, PasswordResetForm
 
-from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice
-from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey
+from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice, Profile
+from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey, FormToPublishSurvey
 
 import csv
 
@@ -303,3 +303,23 @@ def survey_responses(request, survey_id):
         return JsonResponse({"survey": {"title": survey.title, "description": survey.description}, "responses": response_data})
     except Survey.DoesNotExist:
         return JsonResponse({"error": "Survey not found"}, status=404)
+
+def publish_survey(request, survey_id):
+    survey = get_object_or_404(Survey, id=survey_id)
+    user = survey.user
+    profile = Profile.objects.filter(user=user).first()
+
+    if request.method == 'POST':
+        form = FormToPublishSurvey(request.POST, instance=survey, user=request.user)
+        if form.is_valid():
+            form.save()
+            # return redirect('some_success_page')
+    else:
+        form = FormToPublishSurvey(instance=survey, user=request.user)
+
+    return render(request, 'publish_survey.html', {
+        'survey': survey,
+        'user': user,
+        'profile': profile,
+        'form': form
+    })
