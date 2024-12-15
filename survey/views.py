@@ -328,7 +328,7 @@ def change_password_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Your password was successfully updated!")
-            return redirect('survey:profile')  # Arahkan ke halaman profil setelah berhasil
+            return redirect('profile')  # Arahkan ke halaman profil setelah berhasil
     else:
         form = PasswordChangeForm(request.user)
 

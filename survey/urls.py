@@ -35,5 +35,6 @@ urlpatterns = [
     path('reset-password/complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
     # Halaman Settings
+    path('settings/', views.change_password_view, name='settings'),
     path('settings/change-password/', views.change_password_view, name='change_password'),
 ]

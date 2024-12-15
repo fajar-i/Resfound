@@ -1,12 +1,7 @@
 from django.db import models
-
 from django.utils.timezone import now
-from django import forms  # Import the forms module
-from django.db import models
 from django.contrib.auth.models import User
 
-from django.contrib.auth.models import User
-# coba dibuat manual
 class UserProfile(models.Model):
     id = id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pemilik_profile')
