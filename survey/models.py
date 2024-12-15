@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 class Profile(models.Model):
     id = id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pemilik_profile')
-    respoint = models.IntegerField
+    respoint = models.IntegerField()
 
     def __str__(self):
         return self.user.username
@@ -93,7 +93,6 @@ class Response(models.Model):
 
 class RecommendedSurvey(models.Model):
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name='recommended_surveys')
-    token_debit = models.IntegerField()
     token_debit = models.PositiveIntegerField()
     limit = models.PositiveIntegerField()
 
