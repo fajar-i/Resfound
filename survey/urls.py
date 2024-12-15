@@ -7,13 +7,9 @@ from django.contrib.auth import views as auth_views  # Untuk menggunakan views d
 
 urlpatterns = [
     # Arahkan root URL ke login
-<<<<<<< HEAD
-    path('', login_view, name='login'),  # Halaman utama diarahkan ke login
     path('profile/', views.profile_view, name='profile'),
     path('profile/update/', views.update_profile, name='update_profile'),
-=======
-    path('', home_view, name='list_my_survey'),
->>>>>>> 2dc851e2ab8d71413730905335491d08b0c55d6c
+    path('', home_view, name='home'),
 
     # URL dari aplikasi survei
     path('login/', login_view, name='login'),

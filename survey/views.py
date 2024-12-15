@@ -6,22 +6,12 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import AuthenticationForm
-<<<<<<< HEAD
-from .models import UserProfile 
-from .forms import UserProfileForm
-
-
-from .forms import UserSettingsForm
-from django.contrib.auth.forms import PasswordChangeForm
-
-=======
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView, PasswordResetForm
->>>>>>> 2dc851e2ab8d71413730905335491d08b0c55d6c
 
-from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice, Profile
-from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey, FormToPublishSurvey
+from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice, Profile,  UserProfile 
+from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey, FormToPublishSurvey, UserSettingsForm, UserProfileForm
 
 import csv
 
@@ -293,7 +283,6 @@ def answer_survey(request, survey_id=None):
         'form': form,
     })
 
-<<<<<<< HEAD
 @login_required
 def settings_view(request):
     if request.method == 'POST':
@@ -367,30 +356,27 @@ def change_password_view(request):
 def profile_view(request):
     # Anda bisa menambahkan data pengguna yang ingin ditampilkan di halaman profil
     return render(request, 'profile.html')
-=======
-def survey_responses(request, survey_id):
-    try:
-        survey = Survey.objects.get(pk=survey_id)
-        responses = Response.objects.filter(survey=survey)
-        response_data = [
-            {
-                "respondent_id": response.id,
-                "answers": [
-                    {
-                        "question_text": answer.question.text,
-                        "answer": answer.text
-                    }
-                    for answer in response.answers.all()
-                ]
-            }
-            for response in responses
-        ]
-        return JsonResponse({"survey": {"title": survey.title, "description": survey.description}, "responses": response_data})
-    except Survey.DoesNotExist:
-        return JsonResponse({"error": "Survey not found"}, status=404)
-<<<<<<< HEAD
->>>>>>> 2dc851e2ab8d71413730905335491d08b0c55d6c
-=======
+
+# def survey_responses(request, survey_id):
+#     try:
+#         survey = Survey.objects.get(pk=survey_id)
+#         responses = Response.objects.filter(survey=survey)
+#         response_data = [
+#             {
+#                 "respondent_id": response.id,
+#                 "answers": [
+#                     {
+#                         "question_text": answer.question.text,
+#                         "answer": answer.text
+#                     }
+#                     for answer in response.answers.all()
+#                 ]
+#             }
+#             for response in responses
+#         ]
+#         return JsonResponse({"survey": {"title": survey.title, "description": survey.description}, "responses": response_data})
+#     except Survey.DoesNotExist:
+#         return JsonResponse({"error": "Survey not found"}, status=404)
 
 @login_required
 def publish_survey(request, survey_id):
@@ -409,4 +395,3 @@ def publish_survey(request, survey_id):
         'form': form,
         'survey': survey,
     })
->>>>>>> 28fd74cdb950ddb115c0dbf0e43464238c0fcdb0

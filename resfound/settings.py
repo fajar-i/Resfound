@@ -13,7 +13,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'resfound',
         'USER' : 'root',
-        'PASSWORD' : 'password',
+        'PASSWORD' : 'dawn',
         'HOST' : 'localhost',
         'port' : '3306'
     }
@@ -52,12 +52,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-<<<<<<< HEAD
-    'resfound.middleware.DisableCacheMiddleware',  # Tambahkan middleware Anda di sini
-=======
     'corsheaders.middleware.CorsMiddleware',
     'resfound.middleware.DisableCacheMiddleware',  
->>>>>>> 2dc851e2ab8d71413730905335491d08b0c55d6c
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
