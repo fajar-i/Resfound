@@ -304,24 +304,23 @@ def survey_responses(request, survey_id):
     except Survey.DoesNotExist:
         return JsonResponse({"error": "Survey not found"}, status=404)
 
-@login_required
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Survey
+from .forms import FormToPublishSurvey
+
 def publish_survey(request, survey_id):
     survey = get_object_or_404(Survey, id=survey_id)
-    user = survey.user
-    profile = Profile.objects.filter(user=user).first()
 
     if request.method == 'POST':
-        form = FormToPublishSurvey(request.POST, instance=survey, user=request.user)
+        form = FormToPublishSurvey(request.POST, instance=survey)
         if form.is_valid():
-            survey = form.save(commit=False)
-            survey.save()
-            # return redirect('some_success_page')
+            form.save()
+            return redirect('home')
+
     else:
-        form = FormToPublishSurvey(instance=survey, user=request.user)
+        form = FormToPublishSurvey(instance=survey)
 
     return render(request, 'publish_survey.html', {
+        'form': form,
         'survey': survey,
-        'user': user,
-        'profile': profile,
-        'form': form
     })

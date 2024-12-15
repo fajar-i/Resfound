@@ -38,7 +38,7 @@
         <h2 class="mb-4">Publish Survey</h2>
 
         <!-- survey info -->
-        <div class="container">
+        <div class="container bg-dark text-white">
             <p>Title: {{ survey.title }}</p>
             <p>Description: {{ survey.description }}</p>
             <p>Creation date: {{ survey.creation_date }}</p>
@@ -46,20 +46,20 @@
             <p>Your current Respoint: {{ profile.respoint }}</p>
         </div>
 
-        <form method="post">
+        <form method="POST">
             {% csrf_token %}
-            <label for="{{ form.opening_time.id_for_label }}">Opening Time:</label>
-            {{ form.opening_time }}
-            
-            <label for="{{ form.closing_time.id_for_label }}">Closing Time:</label>
-            {{ form.closing_time }}
-            
-            <label for="{{ form.respoint.id_for_label }}">Response Points:</label>
-            {{ form.respoint }}
-            
-            <label for="{{ form.status.id_for_label }}">Status:</label>
-            {{ form.status }}
-            
+            <div>
+                <label for="{{ form.opening_time.id_for_label }}">Opening Time:</label>
+                {{ form.opening_time }}
+            </div>
+            <div>
+                <label for="{{ form.closing_time.id_for_label }}">Closing Time:</label>
+                {{ form.closing_time }}
+            </div>
+            <div>
+                <label for="{{ form.status.id_for_label }}">Status:</label>
+                {{ form.status }}
+            </div>
             <button type="submit">Publish Survey</button>
         </form>
         

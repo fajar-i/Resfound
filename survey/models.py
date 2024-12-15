@@ -21,7 +21,6 @@ class Survey(models.Model):
     opening_time = models.DateTimeField(default=now, null=True, blank=True)
     closing_time = models.DateTimeField(null=True, blank=True)
     total_price = models.IntegerField(default=0)
-    respoint_by_user = models.IntegerField(default=0)
     status = models.BooleanField(default=False)
 
     def __str__(self):
@@ -93,7 +92,6 @@ class Response(models.Model):
 
 class RecommendedSurvey(models.Model):
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name='recommended_surveys')
-    token_debit = models.IntegerField()
     token_debit = models.PositiveIntegerField()
     limit = models.PositiveIntegerField()
 
