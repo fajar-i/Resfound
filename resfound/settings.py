@@ -124,9 +124,10 @@ LOGIN_URL = '/login/'  # Ganti dengan path yang diinginkan
 LOGIN_REDIRECT_URL = '/'      # Redirect setelah berhasil login
 LOGOUT_REDIRECT_URL = '/'     # Redirect setelah logout
 
-
-
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # BASE_DIR is the root directory where manage.py is located
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

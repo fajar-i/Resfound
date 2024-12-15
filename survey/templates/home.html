@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,38 +17,42 @@
 
 <body>
     {% include 'navbar.html' %}
-    <div class="row container">
-        <div class="col" style="text-align: right;">
-            <br>
-            <h5>Welcome, {{ user.username }}! You're logged in.</h5><br>
-            <h1>Resfound</h1>
-            <h3 style="text-align: right;">
-                <div id="word-container" style="display: inline-block; overflow: hidden; height: 1.01em;">
-                    <span id="words" style="display: block; position: relative;">Dari</span>
-                </div>
-                Peneliti
-            </h3><br>
-
-            <h5 style="max-width: 40%; margin-left: auto;">Resfound adalah platform inovatif untuk survei penelitian.
-                Anda dapat berkontribusi pada survei lain sekaligus mendapatkan partisipasi untuk survei Anda. Dengan
-                sistem ekonomi saling menguntungkan, pengumpulan data menjadi lebih efisien dan berkualitas.
-                Bergabunglah untuk mendukung penelitian lebih baik!</h5>
-
-            <!-- <a href="{% url 'create_survey' %}" class="btn btn-primary">Create New Survey</a>
-                <a href="{% url 'fyp' %}" class="btn btn-primary">Surveys for you</a>
-                <a href="{% url 'list_my_survey' %}" class="btn btn-primary">List My Surveys</a>
-                <a href="http://localhost:3000/" class="btn btn-primary">react js</a> -->
-
-            <form method="post" action="{% url 'logout' %}" style="margin-top: 20px;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Logout</button>
-            </form>
+    <div class="container mt-4">
+        <div class="row align-items-center">
+            <!-- Image Column -->
+            <div class="col-md-6 d-flex justify-content-center">
+                <img src="{% static 'survey.avif' %}" alt="Survey Image" class="img-fluid"
+                    style="max-width: 100%; height: auto;">
+            </div>
+            <!-- Text Column -->
+            <div class="col-md-6 text-end">
+                <h1>Resfound</h1>
+                <h3>
+                    <div id="word-container" class="d-inline-block" style="overflow: hidden; height: 1.01em;">
+                        <span id="words" style="display: block; position: relative;">Dari</span>
+                    </div>
+                    Peneliti
+                </h3>
+                <h5 class="mt-4">
+                    Resfound adalah platform inovatif untuk survei penelitian. Anda dapat berkontribusi pada survei lain
+                    sekaligus mendapatkan partisipasi untuk survei Anda. Dengan sistem ekonomi saling menguntungkan,
+                    pengumpulan data menjadi lebih efisien dan berkualitas. Bergabunglah untuk mendukung penelitian
+                    lebih
+                    baik!
+                </h5>
+                <form method="post" action="{% url 'logout' %}" class="mt-3">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+            </div>
         </div>
     </div>
 </body>
 
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-mQ93GVzO9Kj2U+FJb0cSNFspIRyfuG0Fk4uOzZLlqK1SW2JlBwYjK7bhEsWbi0Yx" crossorigin="anonymous"></script>
+    integrity="sha384-mQ93GVzO9Kj2U+FJb0cSNFspIRyfuG0Fk4uOzZLlqK1SW2JlBwYjK7bhEsWbi0Yx"
+    crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
     (function () {
