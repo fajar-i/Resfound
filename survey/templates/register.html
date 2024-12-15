@@ -11,13 +11,13 @@
         /* Global Styles */
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #181818;
+            background-color: #f4f4f4;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            color: white;
+            color: #333;
         }
 
         .register-container {
@@ -25,29 +25,26 @@
             justify-content: center;
             align-items: center;
             width: 100%;
-            max-width: 500px;
-        }
-
-        .container {
-            background-color: #282828;
-            padding: 40px;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            text-align: center;
+            background-color: #ffffff;
+            padding: 40px;
         }
 
         h1 {
             font-size: 2.5rem;
             margin-bottom: 20px;
-            color: #FF0000; /* YouTube Red */
+            color: #0073e6; /* Canva Blue */
             font-weight: bold;
+            text-align: center;
         }
 
         h2 {
             font-size: 1.5rem;
-            color: #fff;
+            color: #333;
             margin-bottom: 20px;
+            text-align: center;
         }
 
         .form-group {
@@ -60,17 +57,25 @@
             width: 100%;
             padding: 12px;
             margin: 10px 0;
-            border: 1px solid #444;
+            border: 1px solid #ccc;
             border-radius: 8px;
-            background-color: #333;
-            color: white;
+            background-color: #f9f9f9;
+            color: #333;
             font-size: 1.1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: #0073e6;
+            outline: none;
         }
 
         button {
             width: 100%;
             padding: 14px;
-            background-color: #FF0000; /* YouTube Red */
+            background-color: #0073e6; /* Canva Blue */
             color: white;
             border: none;
             border-radius: 8px;
@@ -80,21 +85,23 @@
         }
 
         button:hover {
-            background-color: #cc0000;
+            background-color: #005bb5;
         }
 
         .error {
             color: #f44336;
             font-size: 1rem;
             margin-top: 15px;
+            text-align: center;
         }
 
         .login-link {
             font-size: 1rem;
-            color: #FF0000;
+            color: #0073e6;
             text-decoration: none;
             display: block;
             margin-top: 10px;
+            text-align: center;
         }
 
         .login-link:hover {
@@ -103,7 +110,7 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .container {
+            .register-container {
                 padding: 25px;
             }
 
@@ -151,9 +158,4 @@
                 {% endif %}
             </p>
 
-            <a href="{% url 'login' %}" class="login-link">Already have an account? Login here</a>
-        </div>
-    </div>
-</body>
-
-</html>
+            <a href="{% url 'login' %}" class="login-link">Already have

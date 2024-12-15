@@ -7,8 +7,18 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
+<<<<<<< HEAD
+from .models import UserProfile 
+from .forms import UserProfileForm
+
+
+from .forms import UserSettingsForm
+from django.contrib.auth.forms import PasswordChangeForm
+
+=======
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView, PasswordResetForm
+>>>>>>> 2dc851e2ab8d71413730905335491d08b0c55d6c
 
 from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice, Profile
 from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey, FormToPublishSurvey
@@ -283,6 +293,81 @@ def answer_survey(request, survey_id=None):
         'form': form,
     })
 
+<<<<<<< HEAD
+@login_required
+def settings_view(request):
+    if request.method == 'POST':
+        form = UserSettingsForm(request.POST)
+        if form.is_valid():
+            form.save()  # Save the form data if it's valid
+    else:
+        form = UserSettingsForm()  # Initialize an empty form for GET requests
+    
+    return render(request, 'settings.html', {'form': form})
+
+@login_required
+def add_questionnaire_view(request):
+    if request.method == 'POST':
+        form = QuestionnaireForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('settings')
+    else:
+        form = QuestionnaireForm()
+    return render(request, 'add_questionnaire.html', {'form': form})
+
+@login_required
+def profile_view(request):
+    user = request.user
+    try:
+        profile = UserProfile.objects.get(user=user)
+    except UserProfile.DoesNotExist:
+        profile = None  # If the user does not have a profile
+
+    context = {
+        'user': user,
+        'profile': profile,
+    }
+
+    return render(request, 'profile.html', context)
+
+def update_profile(request):
+    user = request.user
+    try:
+        profile = UserProfile.objects.get(user=user)
+    except UserProfile.DoesNotExist:
+        profile = None  # Handle case if profile doesn't exist
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # Redirect to profile page after update
+    else:
+        form = UserProfileForm(instance=profile)
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'update_profile.html', context)
+
+@login_required
+def change_password_view(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your password was successfully updated!")
+            return redirect('survey:profile')  # Arahkan ke halaman profil setelah berhasil
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'change_password.html', {'form': form})
+
+def profile_view(request):
+    # Anda bisa menambahkan data pengguna yang ingin ditampilkan di halaman profil
+    return render(request, 'profile.html')
+=======
 def survey_responses(request, survey_id):
     try:
         survey = Survey.objects.get(pk=survey_id)
@@ -303,25 +388,25 @@ def survey_responses(request, survey_id):
         return JsonResponse({"survey": {"title": survey.title, "description": survey.description}, "responses": response_data})
     except Survey.DoesNotExist:
         return JsonResponse({"error": "Survey not found"}, status=404)
+<<<<<<< HEAD
+>>>>>>> 2dc851e2ab8d71413730905335491d08b0c55d6c
+=======
 
 @login_required
 def publish_survey(request, survey_id):
     survey = get_object_or_404(Survey, id=survey_id)
-    user = survey.user
-    profile = Profile.objects.filter(user=user).first()
 
     if request.method == 'POST':
-        form = FormToPublishSurvey(request.POST, instance=survey, user=request.user)
+        form = FormToPublishSurvey(request.POST, instance=survey)
         if form.is_valid():
-            survey = form.save(commit=False)
-            survey.save()
-            # return redirect('some_success_page')
+            form.save()
+            return redirect('home')
+
     else:
-        form = FormToPublishSurvey(instance=survey, user=request.user)
+        form = FormToPublishSurvey(instance=survey)
 
     return render(request, 'publish_survey.html', {
+        'form': form,
         'survey': survey,
-        'user': user,
-        'profile': profile,
-        'form': form
     })
+>>>>>>> 28fd74cdb950ddb115c0dbf0e43464238c0fcdb0

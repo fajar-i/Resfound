@@ -7,7 +7,13 @@ from django.contrib.auth import views as auth_views  # Untuk menggunakan views d
 
 urlpatterns = [
     # Arahkan root URL ke login
+<<<<<<< HEAD
+    path('', login_view, name='login'),  # Halaman utama diarahkan ke login
+    path('profile/', views.profile_view, name='profile'),
+    path('profile/update/', views.update_profile, name='update_profile'),
+=======
     path('', home_view, name='list_my_survey'),
+>>>>>>> 2dc851e2ab8d71413730905335491d08b0c55d6c
 
     # URL dari aplikasi survei
     path('login/', login_view, name='login'),
@@ -27,9 +33,15 @@ urlpatterns = [
     path('register/', register_view, name='register'),
     path('logout/', logout_view, name='logout'),  # Tambahkan logout path
     
+    
     # Reset Password URL patterns
     path('reset-password/', views.reset_password_view, name='reset_password'),
     path('reset-password/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset-password/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset-password/complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
+    # Halaman Settings
+    path('settings/', views.settings_view, name='settings'),
+    path('settings/add-questionnaire/', views.add_questionnaire_view, name='add_questionnaire'),
+    path('settings/change-password/', views.change_password_view, name='change_password'),
 ]
