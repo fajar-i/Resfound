@@ -121,11 +121,19 @@
 
         <!-- Navigation Buttons -->
         <a href="{% url 'create_survey' %}" class="btn btn-primary">Create New Survey</a>
+<<<<<<< HEAD
         <a href="{% url 'list_my_survey' %}" class="btn btn-info">List My Surveys</a>
         <a href="{% url 'profile' %}" class="btn btn-warning">View Profile</a>
 
         <!-- Logout Form -->
         <form method="post" action="{% url 'login' %}" style="margin-top: 20px;">
+=======
+        <a href="{% url 'fyp' %}" class="btn btn-primary">Surveys for you</a>
+        <a href="{% url 'list_my_survey' %}" class="btn btn-primary">List My Surveys</a>
+        <a href="http://localhost:3000/" class="btn btn-primary">react js</a>
+
+        <form method="post" action="{% url 'logout' %}" style="margin-top: 20px;">
+>>>>>>> 2dc851e2ab8d71413730905335491d08b0c55d6c
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Logout</button>
         </form>

@@ -6,6 +6,7 @@ from .models import Survey, Question, QuestionType, ResponseChoice, SurveyRespon
 
 
 from .models import UserSettings
+from django.utils.safestring import mark_safe
 # Login Form
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
@@ -30,7 +31,7 @@ class FormToCreateQuestion(forms.ModelForm):
             'question_text': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'question_type': forms.Select(attrs={'class': 'form-control'}),
             'question_order': forms.NumberInput(attrs={'class': 'form-control'}),
-            'img': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'img': forms.ClearableFileInput(attrs={'class': 'form-control', 'clear_checkbox_label ': None}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -66,7 +67,15 @@ class FormToAnswerSurvey(forms.Form):
     def __init__(self, questions, *args, **kwargs):
         super(FormToAnswerSurvey, self).__init__(*args, **kwargs)
         for question in questions:
-            question_label = f"{question.question_order}. {question.question_text}"
+            
+            question_label = f''
+            if(question.img):
+                img_html = f'<br><img src="{question.img.url}" alt="Question Image" style="max-width:300px; max-height:300px;"><br>'
+                question_label = img_html
+
+            question_label += f"{question.question_order}. {question.question_text}"
+            question_label = mark_safe(question_label)
+
             choices = ResponseChoice.objects.filter(question=question)
             if choices.exists():
                 self.fields[f"question_{question.id}"] = forms.ChoiceField(
