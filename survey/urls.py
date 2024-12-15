@@ -7,12 +7,10 @@ from django.contrib.auth import views as auth_views  # Untuk menggunakan views d
 
 urlpatterns = [
     # Arahkan root URL ke login
-    path('profile/', views.profile_view, name='profile'),
-    path('profile/update/', views.update_profile, name='update_profile'),
     path('', home_view, name='home'),
+    path('home/', home_view, name='home'),
 
     # URL dari aplikasi survei
-    path('login/', login_view, name='login'),
     path('list_my_survey/', views.list_my_survey, name='list_my_survey'),
     path('fyp/', views.list_survey_fyp, name='fyp'),
     path('export_responses_to_csv/<int:survey_id>/', views.export_responses_to_csv, name='export_responses_to_csv'),
@@ -23,12 +21,12 @@ urlpatterns = [
     path('answer_survey/<int:survey_id>/', views.answer_survey, name='answer_survey'),
     path('publish_survey/<int:survey_id>/', views.publish_survey, name='publish_survey'),
 
-    # path('survey/<int:survey_id>/responses/', views.survey_responses, name='survey_responses'),
-
-    path('home/', home_view, name='home'),
+    #login
+    path('login/', login_view, name='login'),
     path('register/', register_view, name='register'),
+    path('profile/', views.profile_view, name='profile'),
+    path('profile/update/', views.update_profile, name='update_profile'),
     path('logout/', logout_view, name='logout'),  # Tambahkan logout path
-    
     
     # Reset Password URL patterns
     path('reset-password/', views.reset_password_view, name='reset_password'),
@@ -37,7 +35,5 @@ urlpatterns = [
     path('reset-password/complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
     # Halaman Settings
-    path('settings/', views.settings_view, name='settings'),
-    path('settings/add-questionnaire/', views.add_questionnaire_view, name='add_questionnaire'),
     path('settings/change-password/', views.change_password_view, name='change_password'),
 ]

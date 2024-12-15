@@ -10,8 +10,8 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView, PasswordResetForm
 
-from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice, Profile,  UserProfile 
-from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey, FormToPublishSurvey, UserSettingsForm, UserProfileForm
+from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice, UserProfile 
+from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey, FormToPublishSurvey, UserProfileForm
 
 import csv
 
@@ -260,6 +260,8 @@ def answer_survey(request, survey_id=None):
                 question = get_object_or_404(Question, id=question_id)
 
                 choice = ResponseChoice.objects.filter(question=question_id)
+                print(question_id)
+                print(choice)
                 if not choice:
                     Response.objects.create(
                         survey_response=survey_response,
@@ -271,9 +273,10 @@ def answer_survey(request, survey_id=None):
                     Response.objects.create(
                         survey_response=survey_response,
                         question=question,
-                        answer=choice.choices_text,
+                        answer=ResponseChoice.objects.get(id=value),
                         user=request.user
                     )
+                
             return redirect('home')
     else:
         form = FormToAnswerSurvey(questions)
@@ -282,28 +285,6 @@ def answer_survey(request, survey_id=None):
         'survey': survey,
         'form': form,
     })
-
-@login_required
-def settings_view(request):
-    if request.method == 'POST':
-        form = UserSettingsForm(request.POST)
-        if form.is_valid():
-            form.save()  # Save the form data if it's valid
-    else:
-        form = UserSettingsForm()  # Initialize an empty form for GET requests
-    
-    return render(request, 'settings.html', {'form': form})
-
-@login_required
-def add_questionnaire_view(request):
-    if request.method == 'POST':
-        form = QuestionnaireForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('settings')
-    else:
-        form = QuestionnaireForm()
-    return render(request, 'add_questionnaire.html', {'form': form})
 
 @login_required
 def profile_view(request):
@@ -352,31 +333,6 @@ def change_password_view(request):
         form = PasswordChangeForm(request.user)
 
     return render(request, 'change_password.html', {'form': form})
-
-def profile_view(request):
-    # Anda bisa menambahkan data pengguna yang ingin ditampilkan di halaman profil
-    return render(request, 'profile.html')
-
-# def survey_responses(request, survey_id):
-#     try:
-#         survey = Survey.objects.get(pk=survey_id)
-#         responses = Response.objects.filter(survey=survey)
-#         response_data = [
-#             {
-#                 "respondent_id": response.id,
-#                 "answers": [
-#                     {
-#                         "question_text": answer.question.text,
-#                         "answer": answer.text
-#                     }
-#                     for answer in response.answers.all()
-#                 ]
-#             }
-#             for response in responses
-#         ]
-#         return JsonResponse({"survey": {"title": survey.title, "description": survey.description}, "responses": response_data})
-#     except Survey.DoesNotExist:
-#         return JsonResponse({"error": "Survey not found"}, status=404)
 
 @login_required
 def publish_survey(request, survey_id):
