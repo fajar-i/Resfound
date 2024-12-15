@@ -55,7 +55,7 @@
                         <p class="text-muted">by {{ survey.user }} at {{ survey.creation_date }}</p>
 
                         {% if user == survey.user %}
-                        <a href="{% url 'publish_survey' survey.id %}" class="btn btn-success">
+                        <a href="http://localhost:3000/update/{{ survey.id }}" class="btn btn-success">
                             Publish
                         </a>
                         <!-- pindah ke page publish -->
