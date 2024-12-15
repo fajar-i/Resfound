@@ -21,28 +21,28 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">User Information</h5>
-                
+
                 <!-- Display basic user info -->
                 <p><strong>Email:</strong> {{ user.email }}</p>
                 <p><strong>Full Name:</strong> {{ user.get_full_name }}</p>
-                
+
                 <!-- Display profile picture -->
                 <p><strong>Profile Picture:</strong></p>
                 <img src="{{ user.profile.picture.url }}" alt="Profile Picture" width="100">
-                
+
                 <!-- Additional profile details from your user profile model -->
                 <!-- Uncomment these lines if you have additional fields -->
                 <!-- <p><strong>Phone:</strong> {{ user.profile.phone }}</p> -->
                 <!-- <p><strong>Bio:</strong> {{ user.profile.bio }}</p> -->
 
-                <!-- Add Settings button/link -->
-                <a href="{% url 'settings' %}" class="btn btn-warning">Settings</a>
-
-                <!-- Add Update Profile button/link -->
-                <a href="{% url 'update_profile' %}" class="btn btn-primary">Update Profile</a>
-
-                <!-- Add a button to navigate back to the Dashboard -->
-                <a href="{% url 'home' %}" class="btn btn-secondary">Back to Dashboard</a>
+                <form method="post" action="{% url 'logout' %}" class="mt-3">
+                    {% csrf_token %}
+                    
+                    <a href="{% url 'settings' %}" class="btn btn-warning">Settings</a>
+                    <a href="{% url 'update_profile' %}" class="btn btn-primary">Update Profile</a>
+                    <a href="{% url 'home' %}" class="btn btn-secondary">Back to Dashboard</a>
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
             </div>
         </div>
     </div>
