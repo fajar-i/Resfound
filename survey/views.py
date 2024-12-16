@@ -103,12 +103,15 @@ def list_my_survey(request):
 
 def list_survey_fyp(request):
     surveys = Survey.objects.filter(status=True).prefetch_related('recommended_surveys')
+    list_my = Survey.objects.filter(user=request.user)
+    list_fyp = surveys.exclude(id__in=list_my.values_list('id', flat=True))
+
     recommended_surveys = RecommendedSurvey.objects.all()
     context = {
-        'surveys': surveys,
+        'surveys': list_fyp,
         'recommended_surveys': recommended_surveys,
     }
-    return render(request, 'my_survey.html', context)
+    return render(request, 'fyp.html', context)
 
 @login_required
 def export_responses_to_csv(request, survey_id):
@@ -177,6 +180,14 @@ def create_survey(request, survey_id=None):
     )
 
     if request.method == 'POST':
+        # kalau survey belum ada, buat dulu yang baru sesuai dengan form
+        # jangan lupa surveynya disave dulu
+        if survey_form.is_valid() and question_formset.is_valid():
+            # Save survey first to generate survey_id
+            survey = survey_form.save(commit=False)
+            survey.user = request.user
+            survey.save()
+            
         publishData = RecommendedSurvey.objects.filter(survey=survey).first()    
         if not publishData:
             publishData = RecommendedSurvey.objects.create(
