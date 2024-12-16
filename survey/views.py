@@ -223,7 +223,7 @@ def create_survey(request, survey_id=None):
 
             survey.total_price = total_price
             survey.save()
-            return redirect('edit_survey', survey_id=survey.id)
+            return redirect('list_my_survey')
 
     choice_formsets = {}
     for i, question_form in enumerate(question_formset):
