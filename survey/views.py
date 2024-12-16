@@ -12,7 +12,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, 
 
 from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice, UserProfile 
 
-from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey, FormToPublishSurvey, UserProfileForm,ProfileUpdateForm
+from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey, FormToPublishSurvey, ProfileUpdateForm
 import csv
 
 def prevent_logged_in_access(get_response):
@@ -303,23 +303,32 @@ def profile_view(request):
 
 def update_profile(request):
     user = request.user
-    profile = get_object_or_404(UserProfile, user=user)
+    try:
+        # Retrieve the existing profile
+        profile = UserProfile.objects.get(user=user)
+    except UserProfile.DoesNotExist:
+        # Create a new profile if one does not exist
+        profile = UserProfile.objects.create(user=user)
 
     if request.method == 'POST':
         form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+        print(request.POST)
         if form.is_valid():
-            # Update the user's full name if it is provided
-            full_name = request.POST.get('full_name', '')
+            # Update the user's full name if provided
+            full_name = form.cleaned_data.get('full_name', '')
             if full_name:
                 user.first_name, user.last_name = full_name.split(' ', 1) if ' ' in full_name else (full_name, '')
                 user.save()
 
-            form.save()  # Save the profile form data
-            return redirect('profile')  # Redirect to profile page after successful update
+            # Save the UserProfile instance
+            form.save()
+            return redirect('profile')  # Redirect after successful update
+        else:
+            print('form invalid')
     else:
         form = ProfileUpdateForm(instance=profile)
 
-    # Pass the 'profile' object to the context
+    # Render the form with the profile instance
     return render(request, 'update_profile.html', {'form': form, 'profile': profile})
 
 

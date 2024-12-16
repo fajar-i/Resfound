@@ -128,31 +128,30 @@
                     <!-- Full Name -->
                     <div class="mb-4">
                         <label for="id_full_name" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" name="full_name" id="id_full_name" 
-                               value="{{ form.full_name.value|default:profile.user.get_full_name }}" />
+                        {{ form.full_name }}
                     </div>
                     
                     <!-- Phone Number -->
                     <div class="mb-4">
                         <label for="id_phone" class="form-label">Phone Number</label>
-                        <input type="text" class="form-control" name="phone" id="id_phone" 
-                               value="{{ form.phone.value|default:profile.phone }}" />
+                        {{ form.phone }}
                     </div>
                     
                     <!-- Bio -->
                     <div class="mb-4">
                         <label for="id_bio" class="form-label">Bio</label>
-                        <textarea class="form-control" name="bio" id="id_bio" rows="4">{{ form.bio.value|default:profile.bio }}</textarea>
+                        {{ form.bio }}
                     </div>
-
+                
                     <!-- Profile Picture -->
                     <div class="mb-4">
                         <label for="id_picture" class="form-label">Profile Picture</label>
-                        <input type="file" class="form-control" name="picture" id="id_picture" />
+                        {{ form.picture }}
                     </div>
-
+                
                     <button type="submit" class="btn btn-primary btn-block w-100">Update Profile</button>
                 </form>
+                
             </div>
 
             <div class="card-footer">

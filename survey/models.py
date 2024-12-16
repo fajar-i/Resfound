@@ -3,23 +3,9 @@ from django.utils.timezone import now
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 
-
-def update_profile(request):
-    user = request.user
-    profile = get_object_or_404(UserProfile, user=user)
-
-    if request.method == 'POST':
-        form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')  # Setelah berhasil update, redirect ke halaman profil
-    else:
-        form = ProfileUpdateForm(instance=profile)
-
-    return render(request, 'update_profile.html', {'form': form})
-
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    full_name = models.CharField(max_length=255)
     respoint = models.IntegerField(default=0)
     picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     phone = models.CharField(

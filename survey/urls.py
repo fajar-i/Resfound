@@ -27,7 +27,7 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile'),
     path('profile/update/', views.update_profile, name='update_profile'),
     path('logout/', logout_view, name='logout'),  # Tambahkan logout path
-    path('update/', views.update_profile, name='update_profile'),
+    path('update_profile/', views.update_profile, name='update_profile'),
     
     # Reset Password URL patterns
     path('reset-password/', views.reset_password_view, name='reset_password'),

@@ -87,11 +87,6 @@ class FormToAnswerSurvey(forms.Form):
                     widget=forms.TextInput(attrs={'class': 'form-control'}),
                     required=True
                 )
-                
-class UserProfileForm(forms.ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = ['picture', 'bio']
 
 class FormToPublishSurvey(forms.ModelForm):
     class Meta:
@@ -104,14 +99,14 @@ class FormToPublishSurvey(forms.ModelForm):
         }
 
 class ProfileUpdateForm(forms.ModelForm):
-    # Include full name in the form
-    full_name = forms.CharField(max_length=100, required=False, label="Full Name")
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance.user:  # If user instance exists, populate the full_name field
-            self.fields['full_name'].initial = self.instance.user.get_full_name()
     class Meta:
         model = UserProfile
-        fields = ['phone', 'bio', 'picture']  # Existing fields of UserProfile
+        fields = ['full_name', 'phone', 'bio', 'picture']
+        widgets = {
+            'full_name': forms.TextInput(attrs={'class': 'form-control'}),  # Use TextInput for CharField
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+
 

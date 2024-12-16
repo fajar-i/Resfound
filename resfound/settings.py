@@ -14,9 +14,9 @@ MEDIA_URL = '/media/'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'depilkom',
+        'NAME': 'resfound',
         'USER' : 'root',
-        'PASSWORD' : '',
+        'PASSWORD' : 'dawn',
         'HOST' : 'localhost',
         'port' : '3306',
         'OPTIONS': {
@@ -60,8 +60,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'resfound.middleware.DisableCacheMiddleware', 
-
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -134,7 +132,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-LOGIN_URL = '/login.html/'  # Ganti dengan path yang diinginkan
+LOGIN_URL = '/login/'  # Ganti dengan path yang diinginkan
 LOGIN_REDIRECT_URL = '/'      # Redirect setelah berhasil login
 LOGOUT_REDIRECT_URL = '/'     # Redirect setelah logout
 
