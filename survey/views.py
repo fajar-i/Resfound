@@ -103,9 +103,12 @@ def list_my_survey(request):
 
 def list_survey_fyp(request):
     surveys = Survey.objects.filter(status=True).prefetch_related('recommended_surveys')
+    list_my = Survey.objects.filter(user=request.user)
+    list_fyp = surveys.exclude(id__in=list_my.values_list('id', flat=True))
+
     recommended_surveys = RecommendedSurvey.objects.all()
     context = {
-        'surveys': surveys,
+        'surveys': list_fyp,
         'recommended_surveys': recommended_surveys,
     }
     return render(request, 'fyp.html', context)
