@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Survey, SurveyResponse, Response, ResponseChoice, Question, RecommendedSurvey
+from .models import Survey, SurveyResponse, Response, ResponseChoice, Question, RecommendedSurvey, UserProfile
 
 class SurveySerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,6 +10,11 @@ class PublishSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecommendedSurvey
         fields = '__all__'
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['respoint']
         
 
 class ResponseChoiceSerializer(serializers.ModelSerializer):

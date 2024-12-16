@@ -112,25 +112,19 @@ def list_survey_fyp(request):
 
 @login_required
 def export_responses_to_csv(request, survey_id):
-    # Create the HttpResponse object with the appropriate CSV header
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="survey_responses.csv"'
 
-    # Initialize the CSV writer
     writer = csv.writer(response)
 
-    # Fetch the survey and its related data
     survey = get_object_or_404(Survey, id=survey_id)
     questions = Question.objects.filter(survey=survey).order_by('id')
     survey_response = get_object_or_404(SurveyResponse, survey=survey)
 
-    # Write the top row: Questions
     question_texts = [question.question_text for question in questions]
     writer.writerow(question_texts)
 
-    # Write the responses: One row per respondent
     row =[]
-    # Fetch all responses for the current survey response, ordered by question
     responses = Response.objects.filter(survey_response=survey_response).order_by('user')
     print(len(questions))
     i=0
@@ -248,16 +242,15 @@ def create_survey(request, survey_id=None):
     })
 
 def answer_survey(request, survey_id=None):
-
     survey = get_object_or_404(Survey, id=survey_id)
     questions = Question.objects.filter(survey=survey)
+    survey_response = SurveyResponse.objects.filter(survey=survey).first()    
 
     if request.method == 'POST':
         form = FormToAnswerSurvey(questions, request.POST)
 
         if form.is_valid():
 
-            survey_response = SurveyResponse.objects.filter(survey=survey).first()    
             if survey_response:
                 survey_response.status = 'submitted'
                 survey_response.save()
@@ -288,6 +281,15 @@ def answer_survey(request, survey_id=None):
                         answer=ResponseChoice.objects.get(id=value),
                         user=request.user
                     )
+
+            token_debit = RecommendedSurvey.objects.get(survey=survey)
+            token_debit.token_debit -= survey.total_price
+            token_debit.save()
+
+            surveyor_profile = UserProfile.objects.get(user=survey.user) 
+            surveyor_profile.respoint -= survey.total_price
+            surveyor_profile.save()
+
             user_profile = UserProfile.objects.get(user=request.user) 
             user_profile.respoint += survey.total_price
             user_profile.save()
@@ -295,7 +297,7 @@ def answer_survey(request, survey_id=None):
     else:
         form = FormToAnswerSurvey(questions)
 
-    if not Response.objects.filter(user=request.user):
+    if not Response.objects.filter(user=request.user, survey_response=survey_response):
         isResponded = False
     else:
         isResponded = True

@@ -4,8 +4,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .models import Survey, SurveyResponse, RecommendedSurvey, Response as ResponseModel
-from .serializers import SurveySerializer, PublishSerializer, SurveyResponseSerializer, ResponseSerializer
+from .models import Survey, SurveyResponse, UserProfile, RecommendedSurvey, Response as ResponseModel
+from .serializers import SurveySerializer, PublishSerializer, SurveyResponseSerializer, ResponseSerializer, ProfileSerializer
 
 class SurveyViewSets(viewsets.ModelViewSet):
     queryset = Survey.objects.all()
@@ -15,6 +15,11 @@ class SurveyViewSets(viewsets.ModelViewSet):
 class PublishViewSets(viewsets.ModelViewSet):
     queryset = RecommendedSurvey.objects.all()
     serializer_class = PublishSerializer
+    permission_classes = [AllowAny]
+
+class ProfileViewSets(viewsets.ModelViewSet):
+    queryset = UserProfile.objects.all()
+    serializer_class = ProfileSerializer
     permission_classes = [AllowAny]
 
 
