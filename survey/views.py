@@ -102,7 +102,7 @@ def list_my_survey(request):
     return render(request, 'my_survey.html', {'surveys': list_semua, 'user': request.user})
 
 def list_survey_fyp(request):
-    surveys = Survey.objects.all().prefetch_related('recommended_surveys')
+    surveys = Survey.objects.filter(status=True).prefetch_related('recommended_surveys')
     recommended_surveys = RecommendedSurvey.objects.all()
     context = {
         'surveys': surveys,
