@@ -12,6 +12,11 @@
 </head>
 
 <body>
+    {% if isResponded %}
+    <h1 class="text-center">You already responded to this survey</h1>
+    <a href="{% url 'fyp' %}" class="btn-primary">return</a>
+    {% else %}
+
     <!-- Tampilkan judul dan metadata survey -->
     <div class="container rounded border bg-primary text-white p-0">
         <div class="container bg-body-tertiary border-1 p-1 my-1 mx-0 d-block">
@@ -42,6 +47,7 @@
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
+    {% endif %}
 </body>
 
 </html>

@@ -237,6 +237,7 @@ def create_survey(request, survey_id=None):
     })
 
 def answer_survey(request, survey_id=None):
+
     survey = get_object_or_404(Survey, id=survey_id)
     questions = Question.objects.filter(survey=survey)
 
@@ -276,14 +277,23 @@ def answer_survey(request, survey_id=None):
                         answer=ResponseChoice.objects.get(id=value),
                         user=request.user
                     )
-                
+            user_profile = UserProfile.objects.get(user=request.user) 
+            user_profile.respoint += survey.total_price
+            user_profile.save()
             return redirect('home')
     else:
         form = FormToAnswerSurvey(questions)
 
+    if not Response.objects.filter(user=request.user):
+        isResponded = False
+    else:
+        isResponded = True
+        
+
     return render(request, 'answer_survey.html', {
         'survey': survey,
         'form': form,
+        'isResponded' : isResponded,
     })
 
 @login_required
