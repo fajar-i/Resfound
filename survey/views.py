@@ -75,11 +75,10 @@ def reset_password_view(request):
                 form.save(
                     request=request,
                     use_https=request.is_secure(),
-                    email_template_name='registration/password_reset_email.html',  # Pastikan template ini ada
+                    email_template_name='registration/password_reset_email.html',
                 )
-                # Redirect ke halaman login dengan pesan konfirmasi
                 messages.success(request, "Link untuk reset password telah dikirim ke email Anda.")
-                return redirect("login")  # Ganti dengan nama URL login Anda
+                return redirect("login") 
             else:
                 form.add_error("email", "Email tidak ditemukan.")
     else:
@@ -274,7 +273,7 @@ def answer_survey(request, survey_id=None):
                         answer=value,
                         user=request.user
                     )
-                else:  # Multiple-choice response
+                else: 
                     Response.objects.create(
                         survey_response=survey_response,
                         question=question,
@@ -315,7 +314,7 @@ def profile_view(request):
     try:
         profile = UserProfile.objects.get(user=user)
     except UserProfile.DoesNotExist:
-        profile = None  # If the user does not have a profile
+        profile = None 
 
     context = {
         'user': user,
@@ -327,31 +326,26 @@ def profile_view(request):
 def update_profile(request):
     user = request.user
     try:
-        # Retrieve the existing profile
         profile = UserProfile.objects.get(user=user)
     except UserProfile.DoesNotExist:
-        # Create a new profile if one does not exist
         profile = UserProfile.objects.create(user=user)
 
     if request.method == 'POST':
         form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
         print(request.POST)
         if form.is_valid():
-            # Update the user's full name if provided
             full_name = form.cleaned_data.get('full_name', '')
             if full_name:
                 user.first_name, user.last_name = full_name.split(' ', 1) if ' ' in full_name else (full_name, '')
                 user.save()
 
-            # Save the UserProfile instance
             form.save()
-            return redirect('profile')  # Redirect after successful update
+            return redirect('profile')
         else:
             print('form invalid')
     else:
         form = ProfileUpdateForm(instance=profile)
 
-    # Render the form with the profile instance
     return render(request, 'update_profile.html', {'form': form, 'profile': profile})
 
 
@@ -362,7 +356,7 @@ def change_password_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Your password was successfully updated!")
-            return redirect('profile')  # Arahkan ke halaman profil setelah berhasil
+            return redirect('profile')  
     else:
         form = PasswordChangeForm(request.user)
 

@@ -14,9 +14,9 @@ MEDIA_URL = '/media/'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'resfound',
+        'NAME': 'depilkom',
         'USER' : 'root',
-        'PASSWORD' : 'dawn',
+        'PASSWORD' : '',
         'HOST' : 'localhost',
         'port' : '3306',
         'OPTIONS': {
@@ -141,8 +141,6 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",  # BASE_DIR is the root directory where manage.py is located
 ]
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -160,4 +158,20 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'abyanlaksono@upi.edu'  # Ganti dengan email Anda
 EMAIL_HOST_PASSWORD = 'oiws nksf rgav iwfe'  # Ganti dengan password email Anda
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
 

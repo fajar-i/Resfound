@@ -95,7 +95,6 @@
             font-weight: bold;
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .profile-header {
                 flex-direction: column;
@@ -126,7 +125,6 @@
     {% include 'navbar.html' %}
     <div class="container mt-5">
         <div class="profile-header">
-            <!-- Profile Picture -->
             <div class="profile-picture">
                 {% if profile.picture %}
                     <img src="{{ profile.picture.url }}" alt="Profile Picture">
@@ -135,7 +133,6 @@
                 {% endif %}
             </div>
 
-            <!-- Profile Information -->
             <div class="profile-info">
                 <h2>{{ user.username }}</h2>
                 <p><strong>Respoint:</strong> {{ profile.respoint|default:"0" }}</p>
@@ -144,11 +141,10 @@
                 <p><strong>Phone:</strong> {{ profile.phone|default:"-" }}</p>
                 <p><strong>Bio:</strong> {{ profile.bio|default:"-" }}</p>
 
-                <!-- Action Buttons -->
                 <div class="action-btns">
                     <a href="{% url 'settings' %}" class="btn btn-warning">Change Password</a>
                     <a href="{% url 'update_profile' %}" class="btn btn-primary">Edit Profile</a>
-                    <a href="{% url 'home' %}" class="btn btn-secondary">Dashboard</a>
+                    <a href="{% url 'home' %}" class="btn btn-secondary">Home</a>
                     <form method="post" action="{% url 'logout' %}" class="mt-3">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">Logout</button>
