@@ -63,8 +63,7 @@ def register_view(request):
             user.save()
             
             # selain membuat user, buat juga profile untuk user
-            user_profile = UserProfile.objects.get_or_create(user = user)
-            user_profile.respoint = 50
+            user_profile = UserProfile.objects.create(user = user, respoint = 50)
             user_profile.save()
 
             messages.success(request, "Akun berhasil dibuat!")
