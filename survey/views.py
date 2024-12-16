@@ -61,6 +61,12 @@ def register_view(request):
         else:
             user = User.objects.create_user(username=username, email=email, password=password1)
             user.save()
+            
+            # selain membuat user, buat juga profile untuk user
+            user_profile = UserProfile.objects.get_or_create(user = user)
+            user_profile.respoint = 50
+            user_profile.save()
+
             messages.success(request, "Akun berhasil dibuat!")
             return redirect('login')
 
@@ -187,7 +193,7 @@ def create_survey(request, survey_id=None):
             survey = survey_form.save(commit=False)
             survey.user = request.user
             survey.save()
-            
+
         publishData = RecommendedSurvey.objects.filter(survey=survey).first()    
         if not publishData:
             publishData = RecommendedSurvey.objects.create(
