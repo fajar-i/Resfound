@@ -10,7 +10,7 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView, PasswordResetForm
 
-from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice, UserProfile 
+from .models import Survey, Question, QuestionType, SurveyResponse, Response, ResponseChoice, UserProfile, RecommendedSurvey
 
 from .forms import FormToCreateSurvey, FormToCreateQuestion, ChoiceInlineFormset, FormToAnswerSurvey, FormToPublishSurvey, ProfileUpdateForm
 import csv
@@ -102,10 +102,13 @@ def list_my_survey(request):
     return render(request, 'my_survey.html', {'surveys': list_semua, 'user': request.user})
 
 def list_survey_fyp(request):
-    list_semua = Survey.objects.all().order_by('-total_price')
-    list_my = Survey.objects.filter(user=request.user)
-    list_fyp = list_semua.exclude(id__in=list_my.values_list('id', flat=True))
-    return render(request, 'fyp.html', {'surveys': list_fyp, 'user': request.user})
+    surveys = Survey.objects.all().prefetch_related('recommended_surveys')
+    recommended_surveys = RecommendedSurvey.objects.all()
+    context = {
+        'surveys': surveys,
+        'recommended_surveys': recommended_surveys,
+    }
+    return render(request, 'my_survey.html', context)
 
 @login_required
 def export_responses_to_csv(request, survey_id):
@@ -180,6 +183,14 @@ def create_survey(request, survey_id=None):
     )
 
     if request.method == 'POST':
+        publishData = RecommendedSurvey.objects.filter(survey=survey).first()    
+        if not publishData:
+            publishData = RecommendedSurvey.objects.create(
+                survey=survey,
+                token_debit=0,
+                limit=0
+            )
+
         if survey_form.is_valid() and question_formset.is_valid():
             survey = survey_form.save(commit=False)
             survey.user = request.user

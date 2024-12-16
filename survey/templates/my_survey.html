@@ -53,7 +53,11 @@
                         <p class="card-text">{{ survey.description|truncatewords:20 }}</p>
                         <p class="fw-bold">Total Price: ${{ survey.total_price }}</p>
                         <p class="text-muted">by {{ survey.user }} at {{ survey.creation_date }}</p>
-
+                        {% for recommended_survey in survey.recommended_surveys.all %}
+                        <p>Token Debit: {{ recommended_survey.token_debit }}</p>
+                        {% empty %}
+                        <p>No recommended surveys available.</p>
+                        {% endfor %}
                         {% if user == survey.user %}
                         <a href="http://localhost:3000/update/{{ survey.id }}" class="btn btn-success">
                             Publish
@@ -75,6 +79,11 @@
                                 </button>
                             </form>
                         </div>
+
+                        {% else %}
+                        <a href="{% url 'answer_survey' survey.id %}" class="btn btn-primary">
+                            answer survey
+                        </a>
                         {% endif %}
                     </div>
                 </div>
