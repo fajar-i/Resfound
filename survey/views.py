@@ -180,6 +180,14 @@ def create_survey(request, survey_id=None):
     )
 
     if request.method == 'POST':
+        # kalau survey belum ada, buat dulu yang baru sesuai dengan form
+        # jangan lupa surveynya disave dulu
+        if survey_form.is_valid() and question_formset.is_valid():
+            # Save survey first to generate survey_id
+            survey = survey_form.save(commit=False)
+            survey.user = request.user
+            survey.save()
+            
         publishData = RecommendedSurvey.objects.filter(survey=survey).first()    
         if not publishData:
             publishData = RecommendedSurvey.objects.create(
