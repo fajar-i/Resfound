@@ -108,7 +108,7 @@ def list_survey_fyp(request):
         'surveys': surveys,
         'recommended_surveys': recommended_surveys,
     }
-    return render(request, 'my_survey.html', context)
+    return render(request, 'fyp.html', context)
 
 @login_required
 def export_responses_to_csv(request, survey_id):
