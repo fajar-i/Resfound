@@ -72,7 +72,7 @@
                         <div class="real-delete-button" style="display: none;">
                             <form method="POST" action="{% url 'delete_survey' survey.id %}" style="display:inline;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger ms-1">
+                                <button type="submit" class="btn btn-danger mt-1">
                                     Yes, delete
                                 </button>
                             </form>
