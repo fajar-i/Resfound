@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse
 from django.forms import modelformset_factory
-from django.db.models import Prefetch, Max
+from django.db.models import Prefetch, Max, F, Q, OuterRef, Subquery
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -104,17 +104,75 @@ def list_my_survey(request):
     list_semua = Survey.objects.filter(user=request.user)
     return render(request, 'my_survey.html', {'surveys': list_semua, 'user': request.user})
 
-def list_survey_fyp(request):
-    surveys = Survey.objects.filter(status=True).prefetch_related('recommended_surveys')
-    list_my = Survey.objects.filter(user=request.user)
-    list_fyp = surveys.exclude(id__in=list_my.values_list('id', flat=True))
+from django.utils.timezone import now
 
-    recommended_surveys = RecommendedSurvey.objects.all()
+@login_required
+def list_survey_fyp(request):
+    # Get the current time
+    current_time = now()
+
+    # Fetch surveys that are active and within the opening and closing time
+    
+
+    # Subquery to compute the maximum token_debit and limit for each survey
+    recommended_surveys = RecommendedSurvey.objects.filter(
+        survey=OuterRef('pk')
+    ).annotate(
+        min_required_token=F('survey__total_price')
+    ).values('token_debit', 'min_required_token')
+
+    # Fetch surveys with proper filters
+    surveys = Survey.objects.filter(
+        status=True,
+        opening_time__lte=current_time,
+        closing_time__gte=current_time
+    ).annotate(
+        max_token_debit=Subquery(recommended_surveys.values('token_debit')[:1]),
+        min_required_token=Subquery(recommended_surveys.values('min_required_token')[:1]),
+    ).filter(
+        Q(max_token_debit__gte=F('min_required_token'))
+    ).order_by('-max_token_debit')
+
+
+
+    # Surveys the user has already responded to
+    responded_surveys = SurveyResponse.objects.filter(
+        responses__user=request.user,
+    ).values_list('survey_id', flat=True)
+
+    # Recommended surveys logic
+    # recommended_surveys = RecommendedSurvey.objects.all().order_by('-token_debit')
+    # diurutkan descending debit token
+    
+    limited_survey_ids = RecommendedSurvey.objects.filter(
+        limit__gt=0  # Only include surveys with a limit greater than 0
+    ).values_list('survey_id', flat=True)
+
+    # Apply the limit filter to surveys
+    surveys = surveys.filter(id__in=limited_survey_ids)
+    
+    all_surveys = Survey.objects.all()
+    closed_surveys = all_surveys.exclude(id__in=surveys.values_list('id', flat=True))
+
+    # daripada exclude survey milik sendiri, kita buat saja survey milik kita terlihat di fyp
+    # tapi nanti di html dibuat tombolnya tidak bisa "answer survey"
+    # my_survey = Survey.objects.filter(user = request.user)
+    # surveys = surveys.exclude(id__in=my_survey.values_list('id', flat=True))
+    # closed_surveys = closed_surveys.exclude(id__in=my_survey.values_list('id', flat=True))
+
+    # Context for the template
     context = {
-        'surveys': list_fyp,
+        'surveys': surveys,
+        'closed_surveys': closed_surveys,
         'recommended_surveys': recommended_surveys,
+        'responded_survey_ids': list(responded_surveys),  # Pass list of IDs to template
+        'user': request.user, #untuk mengetahui ini survey milik siapa
+        'current_time': current_time, #supaya survey yang belum buka tombolnya bisa di disabled
     }
+
     return render(request, 'fyp.html', context)
+
+
 
 @login_required
 def export_responses_to_csv(request, survey_id):
@@ -183,27 +241,19 @@ def create_survey(request, survey_id=None):
     )
 
     if request.method == 'POST':
-        # kalau survey belum ada, buat dulu yang baru sesuai dengan form
-        # jangan lupa surveynya disave dulu
         if survey_form.is_valid() and question_formset.is_valid():
-            # Save survey first to generate survey_id
             survey = survey_form.save(commit=False)
             survey.user = request.user
             survey.save()
-
-        publishData = RecommendedSurvey.objects.filter(survey=survey).first()    
-        if not publishData:
-            publishData = RecommendedSurvey.objects.create(
-                survey=survey,
-                token_debit=0,
-                limit=0
-            )
-
-        if survey_form.is_valid() and question_formset.is_valid():
-            survey = survey_form.save(commit=False)
-            survey.user = request.user
             total_price = 0
-            survey.save()
+
+            publishData = RecommendedSurvey.objects.filter(survey=survey).first()    
+            if not publishData:
+                publishData = RecommendedSurvey.objects.create(
+                    survey=survey,
+                    token_debit=0,
+                    limit=0
+                )
 
             question_mapping = {}
             for i, question_form in enumerate(question_formset):
@@ -234,6 +284,10 @@ def create_survey(request, survey_id=None):
                         if choice.choices_text.strip():
                             choice.question = question
                             choice.save()
+                    
+                    # Delete choices marked for deletion in the formset
+                    for choice in ChoiceFormset.deleted_objects:
+                        choice.delete()
 
             survey.total_price = total_price
             survey.save()
@@ -299,10 +353,6 @@ def answer_survey(request, survey_id=None):
             token_debit = RecommendedSurvey.objects.get(survey=survey)
             token_debit.token_debit -= survey.total_price
             token_debit.save()
-
-            surveyor_profile = UserProfile.objects.get(user=survey.user) 
-            surveyor_profile.respoint -= survey.total_price
-            surveyor_profile.save()
 
             user_profile = UserProfile.objects.get(user=request.user) 
             user_profile.respoint += survey.total_price

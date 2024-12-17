@@ -57,7 +57,7 @@ ChoiceInlineFormset = inlineformset_factory(
     ResponseChoice,
     form=FormToCreateChoices,
     extra=1,
-    can_delete=False  
+    can_delete=True  
 )
 
 class FormToAnswerSurvey(forms.Form):

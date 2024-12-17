@@ -14,9 +14,9 @@ MEDIA_URL = '/media/'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'depilkom',
+        'NAME': 'resfound',
         'USER' : 'root',
-        'PASSWORD' : '',
+        'PASSWORD' : 'password',
         'HOST' : 'localhost',
         'port' : '3306',
         'OPTIONS': {
