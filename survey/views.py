@@ -137,6 +137,10 @@ def list_survey_fyp(request):
     all_surveys = Survey.objects.all()
     closed_surveys = all_surveys.exclude(id__in=surveys.values_list('id', flat=True))
 
+    # exclude survey milik sendiri
+    my_survey = Survey.objects.get(user = request.user)
+    surveys = surveys.exclude(id__in=my_surveys.values_list('id', flat=True))
+
     # Context for the template
     context = {
         'surveys': surveys,
