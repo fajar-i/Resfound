@@ -57,6 +57,7 @@
                         <p class="text-muted">Closed at {{ survey.closing_time }}</p>
                         {% for recommended_survey in survey.recommended_surveys.all %}
                         <p>Token Debit: {{ recommended_survey.token_debit }}</p>
+                        <p>Limit: {{ recommended_survey.limit }}</p>
                         {% empty %}
                         <p>No recommended surveys available.</p>
                         {% endfor %}

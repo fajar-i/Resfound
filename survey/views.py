@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.http import HttpResponse, JsonResponse
 from django.forms import modelformset_factory
-from django.db.models import Prefetch, Max
+from django.db.models import Prefetch, Max, F, Q, OuterRef, Subquery
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -113,13 +113,28 @@ def list_survey_fyp(request):
     current_time = now()
 
     # Fetch surveys that are active and within the opening and closing time
-    surveys = Survey.objects.filter(
-    status=True,
-    opening_time__lte=current_time,
-    closing_time__gte=current_time
+    
+
+    # Subquery to compute the maximum token_debit and limit for each survey
+    recommended_surveys = RecommendedSurvey.objects.filter(
+        survey=OuterRef('pk')
     ).annotate(
-        max_token_debit=Max('recommended_surveys__token_debit')
+        min_required_token=F('survey__total_price')
+    ).values('token_debit', 'min_required_token')
+
+    # Fetch surveys with proper filters
+    surveys = Survey.objects.filter(
+        status=True,
+        opening_time__lte=current_time,
+        closing_time__gte=current_time
+    ).annotate(
+        max_token_debit=Subquery(recommended_surveys.values('token_debit')[:1]),
+        min_required_token=Subquery(recommended_surveys.values('min_required_token')[:1]),
+    ).filter(
+        Q(max_token_debit__gt=F('min_required_token'))
     ).order_by('-max_token_debit')
+
+
 
     # Surveys the user has already responded to
     responded_surveys = SurveyResponse.objects.filter(
@@ -127,7 +142,7 @@ def list_survey_fyp(request):
     ).values_list('survey_id', flat=True)
 
     # Recommended surveys logic
-    recommended_surveys = RecommendedSurvey.objects.all().order_by('-token_debit')
+    # recommended_surveys = RecommendedSurvey.objects.all().order_by('-token_debit')
     # diurutkan descending debit token
     
     limited_survey_ids = RecommendedSurvey.objects.filter(
