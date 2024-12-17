@@ -114,10 +114,12 @@ def list_survey_fyp(request):
 
     # Fetch surveys that are active and within the opening and closing time
     surveys = Survey.objects.filter(
-        status=True, 
-        opening_time__lte=current_time, 
-        closing_time__gte=current_time
-    ).prefetch_related('recommended_surveys')
+    status=True,
+    opening_time__lte=current_time,
+    closing_time__gte=current_time
+    ).annotate(
+        max_token_debit=Max('recommended_surveys__token_debit')
+    ).order_by('-max_token_debit')
 
     # Surveys the user has already responded to
     responded_surveys = SurveyResponse.objects.filter(
@@ -125,7 +127,8 @@ def list_survey_fyp(request):
     ).values_list('survey_id', flat=True)
 
     # Recommended surveys logic
-    recommended_surveys = RecommendedSurvey.objects.all()
+    recommended_surveys = RecommendedSurvey.objects.all().order_by('-token_debit')
+    # diurutkan descending debit token
     
     limited_survey_ids = RecommendedSurvey.objects.filter(
         limit__gt=0  # Only include surveys with a limit greater than 0
