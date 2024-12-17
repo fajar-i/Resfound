@@ -60,7 +60,7 @@
                         <!-- jika survey milik orang lain, silakan jawab survey -->
                         {% if recommended_survey.survey.user != user %}
                         <a href="{% url 'answer_survey' survey.id %}"
-                            class="btn btn-primary w-100 {% if survey.id in responded_survey_ids or recommended_survey.token_debit == 0 %}disabled{% endif %}">
+                            class="btn btn-primary w-100 {% if survey.id in responded_survey_ids or recommended_survey.token_debit == 0 or survey.opening_time > current_time %}disabled{% endif %}">
                             {% if survey.id in responded_survey_ids %}
                             Survey Answered
                             {% else %}
