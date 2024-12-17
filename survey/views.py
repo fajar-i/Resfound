@@ -270,6 +270,10 @@ def create_survey(request, survey_id=None):
                         if choice.choices_text.strip():
                             choice.question = question
                             choice.save()
+                    
+                    # Delete choices marked for deletion in the formset
+                    for choice in ChoiceFormset.deleted_objects:
+                        choice.delete()
 
             survey.total_price = total_price
             survey.save()
