@@ -101,7 +101,7 @@
                         {% for recommended_survey in survey.recommended_surveys.all %}
                         <p>Token Debit: {{ recommended_survey.token_debit }}</p>
                         <a href="{% url 'answer_survey' survey.id %}"
-                            class="btn btn-primary w-100 {% if survey.id in responded_survey_ids or recommended_survey.token_debit == 0 %}disabled{% endif %}">
+                            class="btn btn-primary w-100 disabled">
                             {% if survey.id in responded_survey_ids %}
                             Survey Answered
                             {% else %}

@@ -325,10 +325,6 @@ def answer_survey(request, survey_id=None):
             token_debit.token_debit -= survey.total_price
             token_debit.save()
 
-            surveyor_profile = UserProfile.objects.get(user=survey.user) 
-            surveyor_profile.respoint -= survey.total_price
-            surveyor_profile.save()
-
             user_profile = UserProfile.objects.get(user=request.user) 
             user_profile.respoint += survey.total_price
             user_profile.save()
