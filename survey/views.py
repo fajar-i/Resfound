@@ -131,7 +131,7 @@ def list_survey_fyp(request):
         max_token_debit=Subquery(recommended_surveys.values('token_debit')[:1]),
         min_required_token=Subquery(recommended_surveys.values('min_required_token')[:1]),
     ).filter(
-        Q(max_token_debit__gt=F('min_required_token'))
+        Q(max_token_debit__gte=F('min_required_token'))
     ).order_by('-max_token_debit')
 
 
