@@ -53,7 +53,8 @@
                         <p class="card-text">{{ survey.description|truncatewords:20 }}</p>
                         <p class="fw-bold">Total Price: ${{ survey.total_price }}</p>
                         <p class="text-muted">by {{ survey.user }} at {{ survey.creation_date }}</p>
-
+                        <p class="text-muted">Open at {{ survey.opening_time }}</p>
+                        <p class="text-muted">Closed at {{ survey.closing_time }}</p>
                         {% for recommended_survey in survey.recommended_surveys.all %}
                         <p>Token Debit: {{ recommended_survey.token_debit }}</p>
                         {% empty %}

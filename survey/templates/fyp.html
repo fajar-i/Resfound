@@ -93,7 +93,9 @@
                         {% endif %}
                         <h5 class="card-title">{{ survey.title }}</h5>
                         <p class="card-text">{{ survey.description|truncatewords:20 }}</p>
-                        <p class="text-muted">{{ survey.user }} at {{ survey.creation_date }}</p>
+                        <p class="text-muted">by {{ survey.user }} at {{ survey.creation_date }}</p>
+                        <p class="text-muted">Open at {{ survey.opening_time }}</p>
+                        <p class="text-muted">Closed at {{ survey.closing_time }}</p>
                         <p class="fw-bold">Total Price: $<span class="text-success">{{ survey.total_price }}</span></p>
 
                         {% for recommended_survey in survey.recommended_surveys.all %}
