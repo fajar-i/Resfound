@@ -105,17 +105,49 @@ def list_my_survey(request):
     list_semua = Survey.objects.filter(user=request.user)
     return render(request, 'my_survey.html', {'surveys': list_semua, 'user': request.user})
 
-def list_survey_fyp(request):
-    surveys = Survey.objects.filter(status=True).prefetch_related('recommended_surveys')
-    list_my = Survey.objects.filter(user=request.user)
-    list_fyp = surveys.exclude(id__in=list_my.values_list('id', flat=True))
+from django.utils.timezone import now
 
+@login_required
+def list_survey_fyp(request):
+    # Get the current time
+    current_time = now()
+
+    # Fetch surveys that are active and within the opening and closing time
+    surveys = Survey.objects.filter(
+        status=True, 
+        opening_time__lte=current_time, 
+        closing_time__gte=current_time
+    ).prefetch_related('recommended_surveys')
+
+    # Surveys the user has already responded to
+    responded_surveys = SurveyResponse.objects.filter(
+        responses__user=request.user,
+    ).values_list('survey_id', flat=True)
+
+    # Recommended surveys logic
     recommended_surveys = RecommendedSurvey.objects.all()
+    
+    limited_survey_ids = RecommendedSurvey.objects.filter(
+        limit__gt=0  # Only include surveys with a limit greater than 0
+    ).values_list('survey_id', flat=True)
+
+    # Apply the limit filter to surveys
+    surveys = surveys.filter(id__in=limited_survey_ids)
+    
+    all_surveys = Survey.objects.all()
+    closed_surveys = all_surveys.exclude(id__in=surveys.values_list('id', flat=True))
+
+    # Context for the template
     context = {
-        'surveys': list_fyp,
+        'surveys': surveys,
+        'closed_surveys': closed_surveys,
         'recommended_surveys': recommended_surveys,
+        'responded_survey_ids': list(responded_surveys),  # Pass list of IDs to template
     }
+
     return render(request, 'fyp.html', context)
+
+
 
 @login_required
 def export_responses_to_csv(request, survey_id):
@@ -184,27 +216,19 @@ def create_survey(request, survey_id=None):
     )
 
     if request.method == 'POST':
-        # kalau survey belum ada, buat dulu yang baru sesuai dengan form
-        # jangan lupa surveynya disave dulu
         if survey_form.is_valid() and question_formset.is_valid():
-            # Save survey first to generate survey_id
             survey = survey_form.save(commit=False)
             survey.user = request.user
             survey.save()
-
-        publishData = RecommendedSurvey.objects.filter(survey=survey).first()    
-        if not publishData:
-            publishData = RecommendedSurvey.objects.create(
-                survey=survey,
-                token_debit=0,
-                limit=0
-            )
-
-        if survey_form.is_valid() and question_formset.is_valid():
-            survey = survey_form.save(commit=False)
-            survey.user = request.user
             total_price = 0
-            survey.save()
+
+            publishData = RecommendedSurvey.objects.filter(survey=survey).first()    
+            if not publishData:
+                publishData = RecommendedSurvey.objects.create(
+                    survey=survey,
+                    token_debit=0,
+                    limit=0
+                )
 
             question_mapping = {}
             for i, question_form in enumerate(question_formset):
