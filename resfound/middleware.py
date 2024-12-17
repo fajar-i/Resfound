@@ -4,8 +4,7 @@ class DisableCacheMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        # Tambahkan logika untuk memeriksa path tertentu
-        if request.path not in ['/static/', '/media/']:  # Biarkan cache untuk static/media
+        if request.path not in ['/static/', '/media/']:  
             response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             response['Pragma'] = 'no-cache'
             response['Expires'] = '0'

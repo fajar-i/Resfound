@@ -138,7 +138,7 @@ LOGOUT_REDIRECT_URL = '/'     # Redirect setelah logout
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # BASE_DIR is the root directory where manage.py is located
+    BASE_DIR / "static",  
 ]
 
 
@@ -150,13 +150,12 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Pengaturan email di Django (gunakan Gmail sebagai contoh)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'abyanlaksono@upi.edu'  # Ganti dengan email Anda
-EMAIL_HOST_PASSWORD = 'oiws nksf rgav iwfe'  # Ganti dengan password email Anda
+EMAIL_HOST_USER = 'abyanlaksono@upi.edu'  
+EMAIL_HOST_PASSWORD = 'oiws nksf rgav iwfe' 
 
 LOGGING = {
     'version': 1,

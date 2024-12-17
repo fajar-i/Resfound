@@ -62,7 +62,6 @@ def register_view(request):
             user = User.objects.create_user(username=username, email=email, password=password1)
             user.save()
             
-            # selain membuat user, buat juga profile untuk user
             user_profile = UserProfile.objects.create(user = user, respoint = 50)
             user_profile.save()
 
@@ -83,7 +82,7 @@ def reset_password_view(request):
                     email_template_name='registration/password_reset_email.html',
                 )
                 messages.success(request, "Link untuk reset password telah dikirim ke email Anda.")
-                return redirect("login") 
+                return redirect("login")
             else:
                 form.add_error("email", "Email tidak ditemukan.")
     else:
