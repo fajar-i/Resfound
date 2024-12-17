@@ -137,10 +137,11 @@ def list_survey_fyp(request):
     all_surveys = Survey.objects.all()
     closed_surveys = all_surveys.exclude(id__in=surveys.values_list('id', flat=True))
 
-    # exclude survey milik sendiri
-    my_survey = Survey.objects.filter(user = request.user)
-    surveys = surveys.exclude(id__in=my_survey.values_list('id', flat=True))
-    closed_surveys = closed_surveys.exclude(id__in=my_survey.values_list('id', flat=True))
+    # daripada exclude survey milik sendiri, kita buat saja survey milik kita terlihat di fyp
+    # tapi nanti di html dibuat tombolnya tidak bisa "answer survey"
+    # my_survey = Survey.objects.filter(user = request.user)
+    # surveys = surveys.exclude(id__in=my_survey.values_list('id', flat=True))
+    # closed_surveys = closed_surveys.exclude(id__in=my_survey.values_list('id', flat=True))
 
     # Context for the template
     context = {
@@ -148,6 +149,7 @@ def list_survey_fyp(request):
         'closed_surveys': closed_surveys,
         'recommended_surveys': recommended_surveys,
         'responded_survey_ids': list(responded_surveys),  # Pass list of IDs to template
+        'user': request.user, #untuk mengetahui ini survey milik siapa
     }
 
     return render(request, 'fyp.html', context)

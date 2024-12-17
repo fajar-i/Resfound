@@ -57,6 +57,8 @@
 
                         {% for recommended_survey in survey.recommended_surveys.all %}
                         <p>Token Debit: {{ recommended_survey.token_debit }}</p>
+                        <!-- jika survey milik orang lain, silakan jawab survey -->
+                        {% if recommended_survey.survey.user != user %}
                         <a href="{% url 'answer_survey' survey.id %}"
                             class="btn btn-primary w-100 {% if survey.id in responded_survey_ids or recommended_survey.token_debit == 0 %}disabled{% endif %}">
                             {% if survey.id in responded_survey_ids %}
@@ -65,6 +67,12 @@
                             Answer Survey
                             {% endif %}
                         </a>
+                        {% else %}
+                        <!-- kalau milik sendiri, arahkan ke list my survey -->
+                        <a href="{% url 'list_my_survey' %}" class="btn btn-secondary w-100">
+                            View your own survey
+                        </a>
+                        {% endif %}
                         {% empty %}
                         <p>No recommended surveys available.</p>
                         {% endfor %}
@@ -75,7 +83,7 @@
             {% endfor %}
         </div>
     </div>
-    
+
     <div class="container py-4">
         <!-- Title -->
         <h2 class="mb-4">Survey Ditutup</h2>
@@ -100,14 +108,21 @@
 
                         {% for recommended_survey in survey.recommended_surveys.all %}
                         <p>Token Debit: {{ recommended_survey.token_debit }}</p>
+                        {% if recommended_survey.survey.user != user %}
                         <a href="{% url 'answer_survey' survey.id %}"
-                            class="btn btn-primary w-100 disabled">
+                            class="btn btn-primary w-100 {% if survey.id in responded_survey_ids or recommended_survey.token_debit == 0 %}disabled{% endif %}">
                             {% if survey.id in responded_survey_ids %}
                             Survey Answered
                             {% else %}
                             Answer Survey
                             {% endif %}
                         </a>
+                        {% else %}
+                        <!-- kalau milik sendiri, arahkan ke list my survey -->
+                        <a href="{% url 'list_my_survey' %}" class="btn btn-secondary w-100">
+                            View your own survey
+                        </a>
+                        {% endif %}
                         {% empty %}
                         <p>No recommended surveys available.</p>
                         {% endfor %}
