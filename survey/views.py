@@ -153,6 +153,7 @@ def list_survey_fyp(request):
         'recommended_surveys': recommended_surveys,
         'responded_survey_ids': list(responded_surveys),  # Pass list of IDs to template
         'user': request.user, #untuk mengetahui ini survey milik siapa
+        'current_time': current_time, #supaya survey yang belum buka tombolnya bisa di disabled
     }
 
     return render(request, 'fyp.html', context)
